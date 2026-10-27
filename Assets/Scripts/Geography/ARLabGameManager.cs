@@ -50,6 +50,12 @@ namespace ARLab.Geography
         [Header("Lista de Continentes (7 Continentes)")]
         public List<ContinentMission> missions = new List<ContinentMission>();
 
+        [Header("Realidade Aumentada (Câmera)")]
+        public ARCameraBackground arCameraBackground;
+        public Button btnToggleARCamera;
+        public Text btnToggleARCameraText;
+        public Image btnToggleARCameraImage;
+
         private int currentMissionIndex = 0;
         private int correctCount = 0;
         private int totalScore = 0;
@@ -102,6 +108,15 @@ namespace ARLab.Geography
             cam.transform.rotation = Quaternion.identity;
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.04f, 0.08f, 0.16f, 1.0f); // 100% opaco para Android
+
+            // Garante o componente de Câmera de Fundo AR (Realidade Aumentada)
+            arCameraBackground = cam.GetComponent<ARCameraBackground>();
+            if (arCameraBackground == null)
+            {
+                arCameraBackground = cam.gameObject.AddComponent<ARCameraBackground>();
+            }
+            arCameraBackground.targetCamera = cam;
+            arCameraBackground.OnARStateChanged = OnARStateChanged;
         }
 
         public void EnsureGlobeAndPins()
@@ -214,17 +229,24 @@ namespace ARLab.Geography
 
                 // Top Bar
                 GameObject topBar = CreatePanel(gameplayHUDPanel, "TopBar", new Color(0.04f, 0.10f, 0.22f, 0.90f));
-                SetRect(topBar, 0.04f, 0.88f, 0.96f, 0.98f, 0, 0, 0, 0);
+                SetRect(topBar, 0.04f, 0.91f, 0.96f, 0.985f, 0, 0, 0, 0);
 
                 missionProgressText = CreateText(topBar, "MissionProgressText", "Missão 1 de 7", 32, new Color(0f, 0.9f, 1f), TextAnchor.MiddleLeft, font);
-                SetRect(missionProgressText.gameObject, 0.05f, 0.1f, 0.50f, 0.9f, 0, 0, 0, 0);
+                SetRect(missionProgressText.gameObject, 0.05f, 0.1f, 0.48f, 0.9f, 0, 0, 0, 0);
 
                 scoreText = CreateText(topBar, "ScoreText", "⭐ Acertos: 0 de 7  (0 pts)", 30, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleRight, font);
-                SetRect(scoreText.gameObject, 0.50f, 0.1f, 0.95f, 0.9f, 0, 0, 0, 0);
+                SetRect(scoreText.gameObject, 0.48f, 0.1f, 0.95f, 0.9f, 0, 0, 0, 0);
+
+                // Botão de Alternância de Câmera RA / Espaço
+                btnToggleARCamera = CreateButton(gameplayHUDPanel, "BtnToggleARCamera", "📷 MODO CÂMERA RA (MUNDO REAL)", new Color(0.12f, 0.45f, 0.85f, 0.95f), font);
+                SetRect(btnToggleARCamera.gameObject, 0.10f, 0.845f, 0.90f, 0.900f, 0, 0, 0, 0);
+                btnToggleARCamera.onClick.AddListener(ToggleARMode);
+                btnToggleARCameraText = btnToggleARCamera.GetComponentInChildren<Text>();
+                btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
 
                 // Mission Card
                 GameObject missionCard = CreatePanel(gameplayHUDPanel, "MissionCard", new Color(0.05f, 0.12f, 0.26f, 0.92f));
-                SetRect(missionCard, 0.05f, 0.74f, 0.95f, 0.87f, 0, 0, 0, 0);
+                SetRect(missionCard, 0.05f, 0.71f, 0.95f, 0.835f, 0, 0, 0, 0);
 
                 missionTitleText = CreateText(missionCard, "MissionTitleText", "🐆 Missão: América do Sul", 36, Color.white, TextAnchor.MiddleLeft, font);
                 SetRect(missionTitleText.gameObject, 0.06f, 0.55f, 0.94f, 0.92f, 0, 0, 0, 0);
@@ -303,7 +325,27 @@ namespace ARLab.Geography
             if (scoreText == null) scoreText = FindTextInChild(hud, "ScoreText");
             if (missionTitleText == null) missionTitleText = FindTextInChild(hud, "MissionTitleText");
             if (missionPromptText == null) missionPromptText = FindTextInChild(hud, "MissionPromptText");
+
+            // Garante o botão de Câmera RA na HUD existente se ainda não foi criado
+            Transform btnArTr = hud.transform.Find("BtnToggleARCamera");
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (btnArTr == null)
+            {
+                btnToggleARCamera = CreateButton(hud, "BtnToggleARCamera", "📷 MODO CÂMERA RA (MUNDO REAL)", new Color(0.12f, 0.45f, 0.85f, 0.95f), font);
+                SetRect(btnToggleARCamera.gameObject, 0.10f, 0.845f, 0.90f, 0.900f, 0, 0, 0, 0);
+                btnToggleARCamera.onClick.AddListener(ToggleARMode);
+                btnToggleARCameraText = btnToggleARCamera.GetComponentInChildren<Text>();
+                btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
+            }
+            else
+            {
+                btnToggleARCamera = btnArTr.GetComponent<Button>();
+                btnToggleARCameraText = btnToggleARCamera.GetComponentInChildren<Text>();
+                btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
+            }
+
             BindButtonInChild(hud, "BtnFoundContinent", CheckCurrentOrientation);
+            BindButtonInChild(hud, "BtnToggleARCamera", ToggleARMode);
         }
 
         private Text FindTextInChild(GameObject parent, string name)
@@ -606,6 +648,37 @@ namespace ARLab.Geography
             }
 
             TelemetryLogger.Instance?.RegisterQuizFinished(correctCount, missions.Count);
+        }
+
+        public void ToggleARMode()
+        {
+            if (arCameraBackground == null)
+            {
+                EnsureCameraSettings();
+            }
+            if (arCameraBackground != null)
+            {
+                arCameraBackground.ToggleARCamera();
+            }
+        }
+
+        private void OnARStateChanged(bool isARActive)
+        {
+            UpdateARButtonUI(isARActive);
+        }
+
+        public void UpdateARButtonUI(bool isARActive)
+        {
+            if (btnToggleARCameraText != null)
+            {
+                btnToggleARCameraText.text = isARActive ? "🌌 MODO ESPAÇO (DESATIVAR RA)" : "📷 MODO CÂMERA RA (MUNDO REAL)";
+            }
+            if (btnToggleARCameraImage != null)
+            {
+                btnToggleARCameraImage.color = isARActive 
+                    ? new Color(0.1f, 0.75f, 0.42f, 0.95f) 
+                    : new Color(0.12f, 0.45f, 0.85f, 0.95f);
+            }
         }
 
         // Helpers de Construção de UI
