@@ -182,41 +182,173 @@ namespace ARLab.Geography
                 globeController = globe.AddComponent<GlobeController>();
             }
 
-            // Garante os 7 pinos com as coordenadas matematicamente corretas
-            EnsurePin(globe, "Pin_AmericaDoSul", "América do Sul", "🐆", "Onça-Pintada", "Floresta Amazônica e o Brasil!", new Vector3(0.293f, -0.096f, -0.431f), new Color(1f, 0.85f, 0.1f));
-            EnsurePin(globe, "Pin_Africa", "África", "🦁", "Leão", "Grandes savanas com leões, zebras e girafas!", new Vector3(0.490f, 0.000f, 0.203f), new Color(1f, 0.48f, 0.08f));
-            EnsurePin(globe, "Pin_Europa", "Europa", "🦊", "Raposa", "Ao norte da África, com florestas temperadas e castelos!", new Vector3(0.293f, 0.431f, 0.096f), new Color(0.18f, 0.55f, 1f));
-            EnsurePin(globe, "Pin_Asia", "Ásia", "🐼", "Urso Panda", "O maior continente da Terra, lar do Panda e do Tigre!", new Vector3(0.000f, 0.297f, 0.439f), new Color(0.95f, 0.2f, 0.35f));
-            EnsurePin(globe, "Pin_Oceania", "Oceania", "🦘", "Canguru", "Austrália e ilhas cercadas por corais coloridos!", new Vector3(-0.328f, -0.255f, 0.328f), new Color(0.15f, 0.9f, 0.35f));
-            EnsurePin(globe, "Pin_AmericaDoNorte", "América do Norte", "🐻", "Urso Pardo", "Florestas de pinheiros, grandes montanhas e o Urso Pardo!", new Vector3(-0.094f, 0.368f, -0.369f), new Color(0.7f, 0.25f, 0.95f));
-            EnsurePin(globe, "Pin_Antartida", "Antártida", "🐧", "Pinguim", "O polo sul congelado coberto de gelo e pinguins!", new Vector3(0.107f, -0.519f, 0.000f), new Color(0.85f, 0.95f, 1f));
+            // 7 Continentes com Modelos 3D Reais de Animais sobre Pedestais Holográficos
+            EnsurePin(globe, "Pin_AmericaDoSul", "América do Sul", "🐆", "Onça-Pintada", "Floresta Amazônica e o Brasil!", 
+                new Vector3(0.293f, -0.096f, -0.431f), new Color(1f, 0.85f, 0.1f), 
+                "Assets/Models/Animals/Tiger/Tiger.fbx", "Assets/Models/Animals/Tiger/texture.png", 0.13f, 0.02f);
+
+            EnsurePin(globe, "Pin_Africa", "África", "🐘", "Elefante", "Grandes savanas africanas com elefantes, zebras e girafas!", 
+                new Vector3(0.490f, 0.000f, 0.203f), new Color(1f, 0.48f, 0.08f), 
+                "Assets/Models/Animals/Elephant/Elephant.fbx", null, 0.12f, 0.02f);
+
+            EnsurePin(globe, "Pin_Europa", "Europa", "🦊", "Raposa", "Ao norte da África, com florestas temperadas e belos castelos!", 
+                new Vector3(0.293f, 0.431f, 0.096f), new Color(0.18f, 0.55f, 1f), 
+                "Assets/Models/Animals/Fox/Fox.obj", null, 0.12f, 0.015f);
+
+            EnsurePin(globe, "Pin_Asia", "Ásia", "🐼", "Urso Panda", "O maior continente da Terra, lar das florestas de bambu e do Panda!", 
+                new Vector3(0.000f, 0.297f, 0.439f), new Color(0.95f, 0.2f, 0.35f), 
+                "Assets/Models/Animals/Panda/Panda.fbx", null, 0.13f, 0.02f);
+
+            EnsurePin(globe, "Pin_Oceania", "Oceania", "🐢", "Tartaruga Marinha", "Austrália e ilhas cercadas pela Grande Barreira de Corais!", 
+                new Vector3(-0.328f, -0.255f, 0.328f), new Color(0.15f, 0.9f, 0.35f), 
+                "Assets/Models/Animals/Turtle/Turtle.fbx", null, 0.13f, 0.015f);
+
+            EnsurePin(globe, "Pin_AmericaDoNorte", "América do Norte", "🐻", "Urso Pardo", "Florestas de pinheiros, grandes montanhas rochosas e o Urso Pardo!", 
+                new Vector3(-0.094f, 0.368f, -0.369f), new Color(0.7f, 0.25f, 0.95f), 
+                "Assets/Models/Animals/Bear/Bear.fbx", "Assets/Models/Animals/Bear/Bear.png", 0.13f, 0.02f);
+
+            EnsurePin(globe, "Pin_Antartida", "Antártida", "🐧", "Pinguim", "O polo sul congelado coberto de gelo e colônias de pinguins!", 
+                new Vector3(0.107f, -0.519f, 0.000f), new Color(0.85f, 0.95f, 1f), 
+                "Assets/Models/Animals/Penguin/Penguin.fbx", "Assets/Models/Animals/Penguin/Penguin(Skin).png", 0.12f, 0.015f);
         }
 
-        private void EnsurePin(GameObject globe, string goName, string continent, string icon, string animal, string fact, Vector3 localPos, Color color)
+        private void EnsurePin(GameObject globe, string goName, string continent, string icon, string animal, string fact, Vector3 localPos, Color color, string modelPath = null, string texturePath = null, float targetSize = 0.12f, float yOffset = 0.015f)
         {
             Transform existing = globe.transform.Find(goName);
             GameObject pinGo = existing != null ? existing.gameObject : null;
 
             if (pinGo == null)
             {
-                pinGo = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                pinGo.name = goName;
+                pinGo = new GameObject(goName);
                 pinGo.transform.SetParent(globe.transform, false);
             }
 
-            pinGo.transform.localPosition = localPos.normalized * 0.53f;
-            pinGo.transform.localScale = Vector3.one * 0.12f;
+            // Remove resquício de esfera primitiva antiga caso exista
+            var oldMf = pinGo.GetComponent<MeshFilter>();
+            if (oldMf != null) DestroyImmediate(oldMf);
+            var oldMr = pinGo.GetComponent<MeshRenderer>();
+            if (oldMr != null) DestroyImmediate(oldMr);
 
-            var mr = pinGo.GetComponent<MeshRenderer>();
-            if (mr != null)
+            Vector3 normal = localPos.normalized;
+            pinGo.transform.localPosition = normal * 0.515f;
+            pinGo.transform.localRotation = Quaternion.FromToRotation(Vector3.up, normal);
+            pinGo.transform.localScale = Vector3.one;
+
+            // 1. Pedestal Luminoso do Continente
+            Transform pedTr = pinGo.transform.Find("Pedestal");
+            GameObject pedestal = pedTr != null ? pedTr.gameObject : null;
+            if (pedestal == null)
+            {
+                pedestal = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                pedestal.name = "Pedestal";
+                pedestal.transform.SetParent(pinGo.transform, false);
+            }
+            pedestal.transform.localPosition = Vector3.zero;
+            pedestal.transform.localRotation = Quaternion.identity;
+            pedestal.transform.localScale = new Vector3(0.12f, 0.008f, 0.12f);
+
+            var pedMr = pedestal.GetComponent<MeshRenderer>();
+            if (pedMr != null)
             {
                 Shader s = Shader.Find("Universal Render Pipeline/Lit");
                 if (s == null) s = Shader.Find("Standard");
                 var mat = new Material(s);
                 mat.color = color;
-                mr.material = mat;
+                mat.EnableKeyword("_EMISSION");
+                mat.SetColor("_EmissionColor", color * 0.45f);
+                pedMr.material = mat;
             }
 
+            // 2. Modelo 3D Real do Animal
+            Transform modelTr = pinGo.transform.Find("AnimalModel");
+            GameObject animalGo = modelTr != null ? modelTr.gameObject : null;
+
+            #if UNITY_EDITOR
+            if (animalGo == null && !string.IsNullOrEmpty(modelPath))
+            {
+                var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
+                if (prefab != null)
+                {
+                    animalGo = Instantiate(prefab);
+                    animalGo.name = "AnimalModel";
+                    animalGo.transform.SetParent(pinGo.transform, false);
+                }
+            }
+            #endif
+
+            if (animalGo != null)
+            {
+                animalGo.transform.localPosition = new Vector3(0, yOffset, 0);
+
+                Renderer[] rends = animalGo.GetComponentsInChildren<Renderer>(true);
+                if (rends.Length > 0)
+                {
+                    Bounds b = rends[0].bounds;
+                    for (int i = 1; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
+
+                    float maxDim = Mathf.Max(b.size.x, b.size.y, b.size.z);
+                    if (maxDim > 0.001f)
+                    {
+                        float scaleFactor = targetSize / maxDim;
+                        animalGo.transform.localScale = Vector3.one * scaleFactor;
+                    }
+                    else
+                    {
+                        animalGo.transform.localScale = Vector3.one * 0.08f;
+                    }
+
+                    #if UNITY_EDITOR
+                    if (!string.IsNullOrEmpty(texturePath))
+                    {
+                        Texture2D tex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+                        if (tex != null)
+                        {
+                            Shader s = Shader.Find("Universal Render Pipeline/Lit");
+                            if (s == null) s = Shader.Find("Standard");
+                            foreach (var r in rends)
+                            {
+                                var mat = new Material(s);
+                                mat.mainTexture = tex;
+                                r.material = mat;
+                            }
+                        }
+                    }
+                    #endif
+                }
+
+                var rotator = animalGo.GetComponent<Animal3DRotator>();
+                if (rotator == null) rotator = animalGo.AddComponent<Animal3DRotator>();
+            }
+            else
+            {
+                // Totem esférico elegante caso o modelo 3D esteja carregando
+                Transform fallbackTr = pinGo.transform.Find("FallbackTotem");
+                if (fallbackTr == null)
+                {
+                    var fallback = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    fallback.name = "FallbackTotem";
+                    fallback.transform.SetParent(pinGo.transform, false);
+                    fallback.transform.localPosition = new Vector3(0, 0.04f, 0);
+                    fallback.transform.localScale = Vector3.one * 0.07f;
+                    var mr = fallback.GetComponent<MeshRenderer>();
+                    if (mr != null)
+                    {
+                        Shader s = Shader.Find("Universal Render Pipeline/Lit");
+                        if (s == null) s = Shader.Find("Standard");
+                        var mat = new Material(s);
+                        mat.color = color;
+                        mr.material = mat;
+                    }
+                }
+            }
+
+            // 3. Collider tátil
+            var col = pinGo.GetComponent<SphereCollider>();
+            if (col == null) col = pinGo.AddComponent<SphereCollider>();
+            col.radius = 0.09f;
+            col.center = new Vector3(0, 0.05f, 0);
+
+            // 4. Hotspot de dados pedagógicos
             var hotspot = pinGo.GetComponent<ContinentHotspot>();
             if (hotspot == null) hotspot = pinGo.AddComponent<ContinentHotspot>();
             hotspot.continentName = continent;
@@ -493,10 +625,10 @@ namespace ARLab.Geography
             missions.Add(new ContinentMission
             {
                 continentName = "África",
-                animalIcon = "🦁",
-                animalName = "Leão",
-                questionPrompt = "Onde vive o grande Leão nas savanas? Gire o globo até a África!",
-                successFact = "África: terra de leões, zebras e girafas sob o sol da savana!"
+                animalIcon = "🐘",
+                animalName = "Elefante",
+                questionPrompt = "Onde vive o grande Elefante nas savanas? Gire o globo até a África!",
+                successFact = "África: terra de grandes elefantes, zebras e girafas sob o sol da savana!"
             });
 
             missions.Add(new ContinentMission
@@ -520,10 +652,10 @@ namespace ARLab.Geography
             missions.Add(new ContinentMission
             {
                 continentName = "Oceania",
-                animalIcon = "🦘",
-                animalName = "Canguru",
-                questionPrompt = "Onde os cangurus saltam em ilhas no oceano azul? Gire até a Oceania!",
-                successFact = "Oceania: Austrália, ilhas paradisíacas e recifes de corais brilhantes!"
+                animalIcon = "🐢",
+                animalName = "Tartaruga Marinha",
+                questionPrompt = "Onde as tartarugas nadam pelos corais azuis? Gire até a Oceania!",
+                successFact = "Oceania: Austrália, ilhas tropicais e a Grande Barreira de Corais!"
             });
 
             missions.Add(new ContinentMission

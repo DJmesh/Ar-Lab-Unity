@@ -101,6 +101,7 @@ namespace ARLab.Geography
         /// </summary>
         public void FlashSuccess(Action onComplete)
         {
+            GetComponentInChildren<Animal3DRotator>()?.PlayHappyJump();
             StartCoroutine(FlashRoutine(new Color(0.1f, 1f, 0.3f), 4, true, onComplete));
         }
 
