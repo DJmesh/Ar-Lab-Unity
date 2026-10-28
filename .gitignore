@@ -69,3 +69,10 @@ crashlytics-build.properties
 .DS_Store
 Thumbs.db
 .utmp/
+
+# Unity temporary and runtime-generated files
+.utmp/
+Assets/Resources/PerformanceTestRun*.json
+Assets/Resources/PerformanceTestRun*.json.meta
+*.apk
+*.aab
