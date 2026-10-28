@@ -6,9 +6,9 @@ namespace ARLab.Geography
 {
     /// <summary>
     /// Gerencia o Pass-through da Câmera do Smartphone (Realidade Aumentada).
-    /// Projeta o feed de vídeo da câmera traseira do celular ao vivo como plano de fundo
-    /// atrás do Globo Terrestre 3D, permitindo que a criança visualize o globo
-    /// flutuando diretamente sobre sua carteira escolar ou ambiente real.
+    /// Projeta o feed de vídeo da câmera traseira do celular ao vivo em tela cheia (100% Full Bleed)
+    /// atrás do Globo Terrestre 3D, permitindo que a criança visualize o globo flutuando
+    /// diretamente sobre a carteira escolar ou sala de aula sem nenhuma borda preta ou azul.
     /// </summary>
     public class ARCameraBackground : MonoBehaviour
     {
@@ -24,7 +24,6 @@ namespace ARLab.Geography
         public Camera targetCamera;
         public GameObject backgroundCanvasObject;
         public RawImage cameraRawImage;
-        public AspectRatioFitter aspectFitter;
 
         private WebCamTexture webCamTexture;
         private bool isARActive = false;
@@ -78,12 +77,13 @@ namespace ARLab.Geography
                 var canvas = backgroundCanvasObject.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
                 canvas.worldCamera = targetCamera;
-                canvas.planeDistance = 45f; // Atrás do globo (globo fica a ~4 unidades da câmera)
-                canvas.sortingOrder = -100; // Renderiza no fundo de tudo
+                canvas.planeDistance = 45f; // Atrás do globo 3D (globo fica a Z=-6 da câmera em Z=-10)
+                canvas.sortingOrder = -100; // Renderiza atrás de toda a cena e UI
 
                 var scaler = backgroundCanvasObject.AddComponent<CanvasScaler>();
                 scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
                 scaler.referenceResolution = new Vector2(1080, 1920);
+                scaler.matchWidthOrHeight = 0.5f;
 
                 var rawGo = new GameObject("CameraFeed_RawImage");
                 rawGo.transform.SetParent(backgroundCanvasObject.transform, false);
@@ -93,13 +93,11 @@ namespace ARLab.Geography
                 cameraRawImage.raycastTarget = false;
 
                 var rt = rawGo.GetComponent<RectTransform>();
-                rt.anchorMin = Vector2.zero;
-                rt.anchorMax = Vector2.one;
-                rt.sizeDelta = Vector2.zero;
-
-                aspectFitter = rawGo.AddComponent<AspectRatioFitter>();
-                aspectFitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
-                aspectFitter.aspectRatio = 16f / 9f;
+                rt.anchorMin = new Vector2(0.5f, 0.5f);
+                rt.anchorMax = new Vector2(0.5f, 0.5f);
+                rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.anchoredPosition = Vector2.zero;
+                rt.sizeDelta = new Vector2(1080, 1920);
             }
             else
             {
@@ -107,9 +105,15 @@ namespace ARLab.Geography
                 {
                     cameraRawImage = backgroundCanvasObject.GetComponentInChildren<RawImage>(true);
                 }
-                if (aspectFitter == null && cameraRawImage != null)
+            }
+
+            // Remove AspectRatioFitter antigo se existir para evitar conflito de rotação
+            if (cameraRawImage != null)
+            {
+                var oldFitter = cameraRawImage.GetComponent<AspectRatioFitter>();
+                if (oldFitter != null)
                 {
-                    aspectFitter = cameraRawImage.GetComponent<AspectRatioFitter>();
+                    DestroyImmediate(oldFitter);
                 }
             }
 
@@ -239,6 +243,7 @@ namespace ARLab.Geography
             if (cameraRawImage != null)
             {
                 cameraRawImage.texture = webCamTexture;
+                cameraRawImage.color = Color.white;
                 UpdateCameraOrientationAndAspect();
             }
 
@@ -247,9 +252,15 @@ namespace ARLab.Geography
                 backgroundCanvasObject.SetActive(true);
             }
 
+            if (targetCamera != null)
+            {
+                targetCamera.clearFlags = CameraClearFlags.SolidColor;
+                targetCamera.backgroundColor = Color.black;
+            }
+
             isARActive = true;
             OnARStateChanged?.Invoke(true);
-            Debug.Log($"<color=#4CAF50><b>[AR Lab SUCESSO]</b></color> Câmera RA ativada! Dispositivo: {selectedDeviceName} ({webCamTexture.width}x{webCamTexture.height})");
+            Debug.Log($"<color=#4CAF50><b>[AR Lab SUCESSO]</b></color> Câmera RA ativada em tela cheia! Dispositivo: {selectedDeviceName} ({webCamTexture.width}x{webCamTexture.height})");
         }
 
         private void EnableSimulatedBackground()
@@ -262,8 +273,13 @@ namespace ARLab.Geography
 
             if (cameraRawImage != null)
             {
-                // Fundo gradiente simulado para testes no Editor caso não haja webcam
-                cameraRawImage.color = new Color(0.12f, 0.16f, 0.24f, 0.95f);
+                cameraRawImage.color = new Color(0.10f, 0.15f, 0.22f, 1f);
+            }
+
+            if (targetCamera != null)
+            {
+                targetCamera.clearFlags = CameraClearFlags.SolidColor;
+                targetCamera.backgroundColor = Color.black;
             }
 
             isARActive = true;
@@ -282,23 +298,43 @@ namespace ARLab.Geography
         {
             if (cameraRawImage == null || webCamTexture == null) return;
 
-            // Corrige rotação do sensor do celular (0, 90, 180, 270 graus)
-            int videoRotation = webCamTexture.videoRotationAngle;
-            cameraRawImage.rectTransform.localEulerAngles = new Vector3(0, 0, -videoRotation);
-
-            // Corrige espelhamento vertical se necessário
-            float scaleY = webCamTexture.videoVerticallyMirrored ? -1f : 1f;
-            cameraRawImage.rectTransform.localScale = new Vector3(1f, scaleY, 1f);
-
-            // Ajusta aspect ratio para evitar qualquer distorção visual
-            if (aspectFitter != null && webCamTexture.width > 16 && webCamTexture.height > 16)
+            // Remove AspectRatioFitter se ainda estiver presente
+            var fitter = cameraRawImage.GetComponent<AspectRatioFitter>();
+            if (fitter != null)
             {
-                float videoRatio = (float)webCamTexture.width / webCamTexture.height;
-                if (videoRotation == 90 || videoRotation == 270)
-                {
-                    videoRatio = (float)webCamTexture.height / webCamTexture.width;
-                }
-                aspectFitter.aspectRatio = videoRatio;
+                DestroyImmediate(fitter);
+            }
+
+            int videoRotation = webCamTexture.videoRotationAngle;
+            float texW = webCamTexture.width > 16 ? webCamTexture.width : requestedWidth;
+            float texH = webCamTexture.height > 16 ? webCamTexture.height : requestedHeight;
+
+            RectTransform parentRT = backgroundCanvasObject != null ? backgroundCanvasObject.GetComponent<RectTransform>() : null;
+            float screenW = (parentRT != null && parentRT.rect.width > 0) ? parentRT.rect.width : Screen.width;
+            float screenH = (parentRT != null && parentRT.rect.height > 0) ? parentRT.rect.height : Screen.height;
+
+            RectTransform rt = cameraRawImage.rectTransform;
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = Vector2.zero;
+            rt.localEulerAngles = new Vector3(0, 0, -videoRotation);
+
+            float scaleY = webCamTexture.videoVerticallyMirrored ? -1f : 1f;
+            rt.localScale = new Vector3(1f, scaleY, 1f);
+
+            // Garante preenchimento 100% de tela cheia sem NENHUMA borda preta ou azul
+            if (videoRotation == 90 || videoRotation == 270)
+            {
+                // Em 90° ou 270° (Modo retrato na maioria dos celulares Android), 
+                // a largura da câmera se alinha com a altura da tela!
+                float scale = Mathf.Max(screenH / texW, screenW / texH);
+                rt.sizeDelta = new Vector2(texW * scale, texH * scale);
+            }
+            else
+            {
+                float scale = Mathf.Max(screenW / texW, screenH / texH);
+                rt.sizeDelta = new Vector2(texW * scale, texH * scale);
             }
         }
 

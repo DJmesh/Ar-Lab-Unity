@@ -20,10 +20,9 @@ namespace ARLab.Geography
 
     /// <summary>
     /// Gerenciador Central do AR Lab:
-    /// Auto-inicialização completa em tempo de execução para Android e Editor,
-    /// controle de 7 missões pedagógicas com validação de orientação,
-    /// efeito de piscar em Verde (Acerto) ou Vermelho com rotação corretiva suave (Erro),
-    /// e placar oficial de acertos 'X de 7'.
+    /// Interface sofisticada em Glassmorphism com pass-through de Câmera RA em tela cheia (100% Full-Bleed),
+    /// Globo Terrestre em proporção perfeita (escala 1.35x), Floating Action Button (FAB) com ícones intuitivos,
+    /// sistema animado de Toast Notifications, e 7 missões pedagógicas com validação tridimensional.
     /// </summary>
     public class ARLabGameManager : MonoBehaviour
     {
@@ -32,6 +31,7 @@ namespace ARLab.Geography
         [Header("Referências da Cena")]
         public Transform globeTransform;
         public GlobeController globeController;
+        public ARCameraBackground arCameraBackground;
 
         [Header("Painéis da Interface")]
         public GameObject gameplayHUDPanel;
@@ -47,28 +47,51 @@ namespace ARLab.Geography
         public Text infoCardDescriptionText;
         public Text victoryScoreText;
 
-        [Header("Lista de Continentes (7 Continentes)")]
-        public List<ContinentMission> missions = new List<ContinentMission>();
-
-        [Header("Realidade Aumentada (Câmera)")]
-        public ARCameraBackground arCameraBackground;
+        [Header("Botão Flutuante de Câmera RA (FAB)")]
         public Button btnToggleARCamera;
         public Text btnToggleARCameraText;
         public Image btnToggleARCameraImage;
 
-        private int currentMissionIndex = 0;
-        private int correctCount = 0;
-        private int totalScore = 0;
+        [Header("Toast Notification")]
+        private GameObject toastObject;
+        private Text toastText;
+        private CanvasGroup toastCanvasGroup;
+        private Coroutine toastCoroutine;
+
+        [Header("Progresso do Jogo")]
+        public List<ContinentMission> missions = new List<ContinentMission>();
+        public int currentMissionIndex = 0;
+        public int correctCount = 0;
+        public int totalScore = 0;
+
         private bool isProcessingAction = false;
+
+        // Sprites procedurais arredondados cacheados
+        private static Sprite _roundedPillSprite;
+        private static Sprite _circleSprite;
+        private static Sprite _glassCardSprite;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void AutoBootstrap()
         {
-            if (Instance == null && FindAnyObjectByType<ARLabGameManager>() == null)
+            if (Instance == null)
             {
-                var go = new GameObject("ARLabGameManager");
-                go.AddComponent<ARLabGameManager>();
+                var existing = FindAnyObjectByType<ARLabGameManager>();
+                if (existing != null)
+                {
+                    Instance = existing;
+                }
+                else
+                {
+                    var go = new GameObject("ARLabGameManager");
+                    Instance = go.AddComponent<ARLabGameManager>();
+                }
             }
+
+            Instance.EnsureCameraSettings();
+            Instance.EnsureGlobeAndPins();
+            Instance.EnsureUIAndEventSystem();
+            Instance.LinkHotspots();
         }
 
         void Awake()
@@ -107,7 +130,7 @@ namespace ARLab.Geography
             cam.transform.position = new Vector3(0, 1f, -10f);
             cam.transform.rotation = Quaternion.identity;
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0.04f, 0.08f, 0.16f, 1.0f); // 100% opaco para Android
+            cam.backgroundColor = new Color(0.04f, 0.08f, 0.16f, 1.0f);
 
             // Garante o componente de Câmera de Fundo AR (Realidade Aumentada)
             arCameraBackground = cam.GetComponent<ARCameraBackground>();
@@ -126,10 +149,12 @@ namespace ARLab.Geography
             {
                 globe = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 globe.name = "Globo_Terrestre";
-                globe.transform.position = new Vector3(0, 1f, -6f);
-                globe.transform.localScale = Vector3.one * 2.2f;
                 globe.transform.rotation = Quaternion.Euler(0, 180f, 0);
             }
+
+            // Garante proporção harmônica elegante (1.35x) para visualização espaçosa e realista em RA
+            globe.transform.position = new Vector3(0, 0.95f, -6f);
+            globe.transform.localScale = Vector3.one * 1.35f;
 
             globeTransform = globe.transform;
 
@@ -203,7 +228,7 @@ namespace ARLab.Geography
                 }
             }
 
-            // Canvas
+            // Canvas Principal
             var canvasGo = GameObject.Find("ARLab_Canvas");
             Canvas canvas = canvasGo != null ? canvasGo.GetComponent<Canvas>() : null;
             if (canvas == null)
@@ -220,163 +245,156 @@ namespace ARLab.Geography
 
             Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
-            // GameplayHUD
+            // Recria ou limpa a HUD antiga para aplicar o design Glassmorphism moderno sem blocos quadrados
             Transform hudTr = canvasGo.transform.Find("GameplayHUD");
-            if (hudTr == null)
+            if (hudTr != null)
             {
-                gameplayHUDPanel = CreatePanel(canvasGo, "GameplayHUD", Color.clear);
-                SetRect(gameplayHUDPanel, 0, 0, 1, 1, 0, 0, 0, 0);
-
-                // Top Bar
-                GameObject topBar = CreatePanel(gameplayHUDPanel, "TopBar", new Color(0.04f, 0.10f, 0.22f, 0.90f));
-                SetRect(topBar, 0.04f, 0.91f, 0.96f, 0.985f, 0, 0, 0, 0);
-
-                missionProgressText = CreateText(topBar, "MissionProgressText", "Missão 1 de 7", 32, new Color(0f, 0.9f, 1f), TextAnchor.MiddleLeft, font);
-                SetRect(missionProgressText.gameObject, 0.05f, 0.1f, 0.48f, 0.9f, 0, 0, 0, 0);
-
-                scoreText = CreateText(topBar, "ScoreText", "⭐ Acertos: 0 de 7  (0 pts)", 30, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleRight, font);
-                SetRect(scoreText.gameObject, 0.48f, 0.1f, 0.95f, 0.9f, 0, 0, 0, 0);
-
-                // Botão de Alternância de Câmera RA / Espaço
-                btnToggleARCamera = CreateButton(gameplayHUDPanel, "BtnToggleARCamera", "📷 MODO CÂMERA RA (MUNDO REAL)", new Color(0.12f, 0.45f, 0.85f, 0.95f), font);
-                SetRect(btnToggleARCamera.gameObject, 0.10f, 0.845f, 0.90f, 0.900f, 0, 0, 0, 0);
-                btnToggleARCamera.onClick.AddListener(ToggleARMode);
-                btnToggleARCameraText = btnToggleARCamera.GetComponentInChildren<Text>();
-                btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
-
-                // Mission Card
-                GameObject missionCard = CreatePanel(gameplayHUDPanel, "MissionCard", new Color(0.05f, 0.12f, 0.26f, 0.92f));
-                SetRect(missionCard, 0.05f, 0.71f, 0.95f, 0.835f, 0, 0, 0, 0);
-
-                missionTitleText = CreateText(missionCard, "MissionTitleText", "🐆 Missão: América do Sul", 36, Color.white, TextAnchor.MiddleLeft, font);
-                SetRect(missionTitleText.gameObject, 0.06f, 0.55f, 0.94f, 0.92f, 0, 0, 0, 0);
-
-                missionPromptText = CreateText(missionCard, "MissionPromptText", "Gire a Terra para posicionar este continente no centro!", 28, new Color(0.85f, 0.9f, 1f), TextAnchor.MiddleLeft, font);
-                SetRect(missionPromptText.gameObject, 0.06f, 0.08f, 0.94f, 0.52f, 0, 0, 0, 0);
-
-                // Botão de Confirmação
-                Button btnFound = CreateButton(gameplayHUDPanel, "BtnFoundContinent", "🌍 ESTOU VENDO ESTE CONTINENTE!", new Color(0.05f, 0.75f, 0.38f), font);
-                SetRect(btnFound.gameObject, 0.06f, 0.04f, 0.94f, 0.12f, 0, 0, 0, 0);
-                btnFound.onClick.AddListener(CheckCurrentOrientation);
-            }
-            else
-            {
-                gameplayHUDPanel = hudTr.gameObject;
-                BindExistingHUD(gameplayHUDPanel);
+                DestroyImmediate(hudTr.gameObject);
             }
 
-            // InfoCard
+            gameplayHUDPanel = CreatePanel(canvasGo, "GameplayHUD", Color.clear);
+            SetRect(gameplayHUDPanel, 0, 0, 1, 1, 0, 0, 0, 0);
+
+            // 1. Top HUD Card (Design Glassmorphic translúcido com cantos arredondados)
+            GameObject topCard = CreatePanel(gameplayHUDPanel, "GlassMissionHUD", new Color(0.04f, 0.09f, 0.18f, 0.68f), GetGlassCardSprite());
+            SetRect(topCard, 0.04f, 0.845f, 0.79f, 0.975f, 0, 0, 0, 0);
+
+            // Linha superior: Progresso + Pontos
+            missionProgressText = CreateText(topCard, "MissionProgressText", "🎯 Missão 1 de 7", 26, new Color(0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
+            SetRect(missionProgressText.gameObject, 0.06f, 0.65f, 0.56f, 0.95f, 0, 0, 0, 0);
+
+            scoreText = CreateText(topCard, "ScoreText", "⭐ 0 pts", 26, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleRight, font);
+            SetRect(scoreText.gameObject, 0.56f, 0.65f, 0.94f, 0.95f, 0, 0, 0, 0);
+
+            // Linha central: Nome do Continente e Animal
+            missionTitleText = CreateText(topCard, "MissionTitleText", "🐆 América do Sul", 32, Color.white, TextAnchor.MiddleLeft, font);
+            missionTitleText.fontStyle = FontStyle.Bold;
+            SetRect(missionTitleText.gameObject, 0.06f, 0.32f, 0.94f, 0.65f, 0, 0, 0, 0);
+
+            // Linha inferior: Instrução lúdica amigável
+            missionPromptText = CreateText(topCard, "MissionPromptText", "Gire a Terra para posicionar no centro!", 21, new Color(0.82f, 0.90f, 0.98f), TextAnchor.MiddleLeft, font);
+            SetRect(missionPromptText.gameObject, 0.06f, 0.05f, 0.94f, 0.32f, 0, 0, 0, 0);
+
+            // 2. Botão Flutuante Circular (FAB) de Alternância de Câmera RA / Modo Espaço
+            btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "📷", new Color(0.08f, 0.82f, 0.45f, 0.95f), font, GetCircleSprite(), 38);
+            SetRect(btnToggleARCamera.gameObject, 0.82f, 0.865f, 0.96f, 0.965f, 0, 0, 0, 0);
+            btnToggleARCamera.onClick.AddListener(ToggleARMode);
+            btnToggleARCameraText = btnToggleARCamera.GetComponentInChildren<Text>();
+            btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
+
+            // 3. Botão Flutuante Inferior (Cápsula Esmeralda Brilhante com cantos suaves)
+            Button btnFound = CreateRoundedButton(gameplayHUDPanel, "BtnFoundContinent", "✨ ESTOU VENDO ESTE CONTINENTE!", new Color(0.06f, 0.82f, 0.45f, 0.95f), font, GetRoundedPillSprite(), 28);
+            btnFound.GetComponentInChildren<Text>().fontStyle = FontStyle.Bold;
+            SetRect(btnFound.gameObject, 0.08f, 0.035f, 0.92f, 0.105f, 0, 0, 0, 0);
+            btnFound.onClick.AddListener(CheckCurrentOrientation);
+
+            // 4. Toast Notification Flutuante
+            EnsureToastUI(canvasGo, font);
+
+            // 5. InfoCard (Feedback e Curiosidades com Glassmorphism)
             Transform infoTr = canvasGo.transform.Find("InfoCard");
-            if (infoTr == null)
-            {
-                infoCardPanel = CreatePanel(canvasGo, "InfoCard", new Color(0.08f, 0.18f, 0.35f, 0.96f));
-                SetRect(infoCardPanel, 0.08f, 0.36f, 0.92f, 0.64f, 0, 0, 0, 0);
+            if (infoTr != null) DestroyImmediate(infoTr.gameObject);
 
-                infoCardTitleText = CreateText(infoCardPanel, "InfoTitle", "Resultado", 36, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleCenter, font);
-                SetRect(infoCardTitleText.gameObject, 0.05f, 0.70f, 0.85f, 0.95f, 0, 0, 0, 0);
+            infoCardPanel = CreatePanel(canvasGo, "InfoCard", new Color(0.05f, 0.10f, 0.22f, 0.94f), GetGlassCardSprite());
+            SetRect(infoCardPanel, 0.07f, 0.32f, 0.93f, 0.68f, 0, 0, 0, 0);
 
-                infoCardDescriptionText = CreateText(infoCardPanel, "InfoDesc", "Você encontrou o continente!", 28, Color.white, TextAnchor.MiddleCenter, font);
-                SetRect(infoCardDescriptionText.gameObject, 0.05f, 0.15f, 0.95f, 0.70f, 0, 0, 0, 0);
+            infoCardTitleText = CreateText(infoCardPanel, "InfoTitle", "Resultado", 34, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleCenter, font);
+            infoCardTitleText.fontStyle = FontStyle.Bold;
+            SetRect(infoCardTitleText.gameObject, 0.06f, 0.72f, 0.84f, 0.95f, 0, 0, 0, 0);
 
-                var btnClose = CreateButton(infoCardPanel, "BtnCloseInfo", "✖", new Color(0.8f, 0.2f, 0.2f), font);
-                SetRect(btnClose.gameObject, 0.88f, 0.75f, 0.98f, 0.95f, 0, 0, 0, 0);
-                btnClose.onClick.AddListener(HideInfoCard);
+            infoCardDescriptionText = CreateText(infoCardPanel, "InfoDesc", "Você encontrou o continente!", 26, Color.white, TextAnchor.MiddleCenter, font);
+            SetRect(infoCardDescriptionText.gameObject, 0.06f, 0.22f, 0.94f, 0.72f, 0, 0, 0, 0);
 
-                infoCardPanel.SetActive(false);
-            }
-            else
-            {
-                infoCardPanel = infoTr.gameObject;
-                infoCardTitleText = FindTextInChild(infoCardPanel, "InfoTitle");
-                infoCardDescriptionText = FindTextInChild(infoCardPanel, "InfoDesc");
-                BindButtonInChild(infoCardPanel, "BtnCloseInfo", HideInfoCard);
-            }
+            var btnClose = CreateRoundedButton(infoCardPanel, "BtnCloseInfo", "✖", new Color(0.85f, 0.25f, 0.25f, 0.9f), font, GetCircleSprite(), 28);
+            SetRect(btnClose.gameObject, 0.86f, 0.80f, 0.96f, 0.94f, 0, 0, 0, 0);
+            btnClose.onClick.AddListener(HideInfoCard);
 
-            // VictoryPanel
+            infoCardPanel.SetActive(false);
+
+            // 6. Painel de Vitória Final
             Transform vicTr = canvasGo.transform.Find("VictoryPanel");
-            if (vicTr == null)
-            {
-                victoryPanel = CreatePanel(canvasGo, "VictoryPanel", new Color(0.04f, 0.1f, 0.22f, 0.96f));
-                SetRect(victoryPanel, 0.05f, 0.25f, 0.95f, 0.75f, 0, 0, 0, 0);
+            if (vicTr != null) DestroyImmediate(vicTr.gameObject);
 
-                var vicTitle = CreateText(victoryPanel, "VictoryTitle", "🏆 PARABÉNS, EXPLORADOR!", 46, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleCenter, font);
-                SetRect(vicTitle.gameObject, 0.05f, 0.65f, 0.95f, 0.92f, 0, 0, 0, 0);
+            victoryPanel = CreatePanel(canvasGo, "VictoryPanel", new Color(0.04f, 0.08f, 0.18f, 0.96f), GetGlassCardSprite());
+            SetRect(victoryPanel, 0.08f, 0.28f, 0.92f, 0.72f, 0, 0, 0, 0);
 
-                victoryScoreText = CreateText(victoryPanel, "VictoryScore", "Você finalizou o Desafio dos Continentes!\nAcertos: ⭐ 7 de 7 Continentes!", 30, Color.white, TextAnchor.MiddleCenter, font);
-                SetRect(victoryScoreText.gameObject, 0.05f, 0.35f, 0.95f, 0.65f, 0, 0, 0, 0);
+            var vicTitle = CreateText(victoryPanel, "VictoryTitle", "🎉 MISSÃO CONCLUÍDA! 🌍", 36, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleCenter, font);
+            vicTitle.fontStyle = FontStyle.Bold;
+            SetRect(vicTitle.gameObject, 0.05f, 0.75f, 0.95f, 0.95f, 0, 0, 0, 0);
 
-                var btnRestart = CreateButton(victoryPanel, "BtnRestart", "🔄 JOGAR NOVAMENTE", new Color(0.2f, 0.75f, 0.4f), font);
-                SetRect(btnRestart.gameObject, 0.15f, 0.10f, 0.85f, 0.28f, 0, 0, 0, 0);
-                btnRestart.onClick.AddListener(StartDirectExploration);
+            victoryScoreText = CreateText(victoryPanel, "VictoryScore", "Você conheceu os 7 Continentes!", 28, Color.white, TextAnchor.MiddleCenter, font);
+            SetRect(victoryScoreText.gameObject, 0.06f, 0.32f, 0.94f, 0.75f, 0, 0, 0, 0);
 
-                victoryPanel.SetActive(false);
-            }
-            else
-            {
-                victoryPanel = vicTr.gameObject;
-                victoryScoreText = FindTextInChild(victoryPanel, "VictoryScore");
-                BindButtonInChild(victoryPanel, "BtnRestart", StartDirectExploration);
-            }
+            var btnRestart = CreateRoundedButton(victoryPanel, "BtnRestart", "🔄 JOGAR NOVAMENTE", new Color(0.06f, 0.82f, 0.45f, 0.95f), font, GetRoundedPillSprite(), 28);
+            btnRestart.GetComponentInChildren<Text>().fontStyle = FontStyle.Bold;
+            SetRect(btnRestart.gameObject, 0.12f, 0.10f, 0.88f, 0.24f, 0, 0, 0, 0);
+            btnRestart.onClick.AddListener(StartDirectExploration);
+
+            victoryPanel.SetActive(false);
+
+            // Atualiza o estado inicial do botão da câmera RA
+            bool isARCurrentlyActive = (arCameraBackground != null && arCameraBackground.IsARActive);
+            UpdateARButtonUI(isARCurrentlyActive);
         }
 
-        private void BindExistingHUD(GameObject hud)
+        private void EnsureToastUI(GameObject canvasGo, Font font)
         {
-            if (missionProgressText == null) missionProgressText = FindTextInChild(hud, "MissionProgressText");
-            if (scoreText == null) scoreText = FindTextInChild(hud, "ScoreText");
-            if (missionTitleText == null) missionTitleText = FindTextInChild(hud, "MissionTitleText");
-            if (missionPromptText == null) missionPromptText = FindTextInChild(hud, "MissionPromptText");
+            Transform existingToast = canvasGo.transform.Find("ToastNotification");
+            if (existingToast != null) DestroyImmediate(existingToast.gameObject);
 
-            // Garante o botão de Câmera RA na HUD existente se ainda não foi criado
-            Transform btnArTr = hud.transform.Find("BtnToggleARCamera");
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (btnArTr == null)
-            {
-                btnToggleARCamera = CreateButton(hud, "BtnToggleARCamera", "📷 MODO CÂMERA RA (MUNDO REAL)", new Color(0.12f, 0.45f, 0.85f, 0.95f), font);
-                SetRect(btnToggleARCamera.gameObject, 0.10f, 0.845f, 0.90f, 0.900f, 0, 0, 0, 0);
-                btnToggleARCamera.onClick.AddListener(ToggleARMode);
-                btnToggleARCameraText = btnToggleARCamera.GetComponentInChildren<Text>();
-                btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
-            }
-            else
-            {
-                btnToggleARCamera = btnArTr.GetComponent<Button>();
-                btnToggleARCameraText = btnToggleARCamera.GetComponentInChildren<Text>();
-                btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
-            }
+            toastObject = CreatePanel(canvasGo, "ToastNotification", new Color(0.04f, 0.08f, 0.16f, 0.94f), GetRoundedPillSprite());
+            SetRect(toastObject, 0.10f, 0.75f, 0.90f, 0.82f, 0, 0, 0, 0);
 
-            BindButtonInChild(hud, "BtnFoundContinent", CheckCurrentOrientation);
-            BindButtonInChild(hud, "BtnToggleARCamera", ToggleARMode);
+            toastCanvasGroup = toastObject.AddComponent<CanvasGroup>();
+            toastCanvasGroup.alpha = 0f;
+            toastCanvasGroup.interactable = false;
+            toastCanvasGroup.blocksRaycasts = false;
+
+            toastText = CreateText(toastObject, "ToastText", "", 24, Color.white, TextAnchor.MiddleCenter, font);
+            toastText.fontStyle = FontStyle.Bold;
+            SetRect(toastText.gameObject, 0.05f, 0.05f, 0.95f, 0.95f, 0, 0, 0, 0);
+
+            toastObject.SetActive(false);
         }
 
-        private Text FindTextInChild(GameObject parent, string name)
+        public void ShowToast(string message, Color? accentColor = null)
         {
-            var tr = parent.transform.Find(name);
-            if (tr == null)
-            {
-                foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
-                {
-                    if (child.name == name) return child.GetComponent<Text>();
-                }
-                return null;
-            }
-            return tr.GetComponent<Text>();
+            if (toastObject == null) return;
+            if (toastCoroutine != null) StopCoroutine(toastCoroutine);
+            toastCoroutine = StartCoroutine(AnimateToast(message, accentColor ?? new Color(0f, 0.92f, 1f)));
         }
 
-        private void BindButtonInChild(GameObject parent, string name, UnityEngine.Events.UnityAction action)
+        private IEnumerator AnimateToast(string message, Color accentColor)
         {
-            foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
+            toastObject.SetActive(true);
+            if (toastText != null)
             {
-                if (child.name == name)
-                {
-                    var btn = child.GetComponent<Button>();
-                    if (btn != null)
-                    {
-                        btn.onClick.RemoveAllListeners();
-                        btn.onClick.AddListener(action);
-                    }
-                    return;
-                }
+                toastText.text = message;
+                toastText.color = accentColor;
             }
+
+            // Fade in suave
+            float elapsed = 0f;
+            while (elapsed < 0.2f)
+            {
+                elapsed += Time.deltaTime;
+                toastCanvasGroup.alpha = Mathf.Clamp01(elapsed / 0.2f);
+                yield return null;
+            }
+            toastCanvasGroup.alpha = 1f;
+
+            yield return new WaitForSeconds(2.0f);
+
+            // Fade out suave
+            elapsed = 0f;
+            while (elapsed < 0.3f)
+            {
+                elapsed += Time.deltaTime;
+                toastCanvasGroup.alpha = Mathf.Clamp01(1f - (elapsed / 0.3f));
+                yield return null;
+            }
+            toastCanvasGroup.alpha = 0f;
+            toastObject.SetActive(false);
         }
 
         private void Initialize7Continents()
@@ -388,7 +406,7 @@ namespace ARLab.Geography
                 continentName = "América do Sul",
                 animalIcon = "🐆",
                 animalName = "Onça-Pintada",
-                questionPrompt = "Encontre a América do Sul! Gire a Terra até posicioná-la no centro da tela!",
+                questionPrompt = "Encontre a América do Sul! Gire a Terra até posicioná-la no centro!",
                 successFact = "América do Sul: Floresta Amazônica, Onça-Pintada e o Brasil!"
             });
 
@@ -415,8 +433,8 @@ namespace ARLab.Geography
                 continentName = "Ásia",
                 animalIcon = "🐼",
                 animalName = "Urso Panda",
-                questionPrompt = "Encontre a grande Ásia, o maior continente! Onde vive o Urso Panda?",
-                successFact = "Ásia: o maior continente da Terra, lar do Panda e do Tigre!"
+                questionPrompt = "Procure o maior continente da Terra onde vive o Urso Panda! Encontre a Ásia!",
+                successFact = "Ásia: o maior continente do planeta, lar dos Montes Himalaias e do Panda!"
             });
 
             missions.Add(new ContinentMission
@@ -424,8 +442,8 @@ namespace ARLab.Geography
                 continentName = "Oceania",
                 animalIcon = "🦘",
                 animalName = "Canguru",
-                questionPrompt = "Onde pula o simpático Canguru? Gire a Terra até as ilhas da Oceania!",
-                successFact = "Oceania: Austrália cercada por oceanos e a Grande Barreira de Corais!"
+                questionPrompt = "Onde os cangurus saltam em ilhas no oceano azul? Gire até a Oceania!",
+                successFact = "Oceania: Austrália, ilhas paradisíacas e recifes de corais brilhantes!"
             });
 
             missions.Add(new ContinentMission
@@ -433,8 +451,8 @@ namespace ARLab.Geography
                 continentName = "América do Norte",
                 animalIcon = "🐻",
                 animalName = "Urso Pardo",
-                questionPrompt = "Ao norte, encontre a América do Norte, a terra do Urso Pardo e das Águias!",
-                successFact = "América do Norte: grandes montanhas, florestas e o Urso Pardo!"
+                questionPrompt = "Encontre as terras altas do Urso Pardo e montanhas nevadas na América do Norte!",
+                successFact = "América do Norte: grandes montanhas rochosas, lagos gigantes e florestas de pinheiros!"
             });
 
             missions.Add(new ContinentMission
@@ -442,19 +460,19 @@ namespace ARLab.Geography
                 continentName = "Antártida",
                 animalIcon = "🐧",
                 animalName = "Pinguim",
-                questionPrompt = "Lá no Polo Sul, encontre o gelo da Antártida onde moram os Pinguins!",
-                successFact = "Antártida: o continente mais frio da Terra coberto de gelo e pinguins!"
+                questionPrompt = "Gire o globo para ver o polo sul gelado onde vivem os pinguins na Antártida!",
+                successFact = "Antártida: o continente mais frio do mundo, todo coberto de gelo e pinguins!"
             });
         }
 
         public void LinkHotspots()
         {
-            var hotspots = FindObjectsByType<ContinentHotspot>(FindObjectsInactive.Include);
-            foreach (var m in missions)
+            var hotspots = FindObjectsByType<ContinentHotspot>(FindObjectsSortMode.None);
+            foreach (var h in hotspots)
             {
-                foreach (var h in hotspots)
+                foreach (var m in missions)
                 {
-                    if (h.continentName.Trim().Equals(m.continentName.Trim(), StringComparison.OrdinalIgnoreCase))
+                    if (m.continentName.Trim().Equals(h.continentName.Trim(), StringComparison.OrdinalIgnoreCase))
                     {
                         m.hotspot = h;
                         break;
@@ -465,19 +483,19 @@ namespace ARLab.Geography
 
         public void StartDirectExploration()
         {
-            if (victoryPanel != null) victoryPanel.SetActive(false);
-            if (gameplayHUDPanel != null) gameplayHUDPanel.SetActive(true);
-            if (infoCardPanel != null) infoCardPanel.SetActive(false);
-
             currentMissionIndex = 0;
             correctCount = 0;
             totalScore = 0;
             isProcessingAction = false;
 
+            if (victoryPanel != null) victoryPanel.SetActive(false);
+            if (infoCardPanel != null) infoCardPanel.SetActive(false);
+            if (gameplayHUDPanel != null) gameplayHUDPanel.SetActive(true);
+
             UpdateScoreDisplay();
             StartCurrentMission();
 
-            TelemetryLogger.Instance?.RegisterSessionStart();
+            TelemetryLogger.Instance?.RegisterSessionStart("Mobile_Touch_Direct");
         }
 
         private void StartCurrentMission()
@@ -498,11 +516,11 @@ namespace ARLab.Geography
                 missionPromptText.text = mission.questionPrompt;
 
             if (missionProgressText != null)
-                missionProgressText.text = $"Missão {currentMissionIndex + 1} de {missions.Count}";
+                missionProgressText.text = $"🎯 Missão {currentMissionIndex + 1} de {missions.Count}";
         }
 
         /// <summary>
-        /// Acionado pelo botão 'Estou Vendo Este Continente!'
+        /// Acionado pelo botão flutuante 'ESTOU VENDO ESTE CONTINENTE!'
         /// </summary>
         public void CheckCurrentOrientation()
         {
@@ -536,7 +554,7 @@ namespace ARLab.Geography
             }
             else
             {
-                ShowInfoCard($"🔍 Você tocou em: {clickedHotspot.continentName}!", $"{clickedHotspot.animalIcon} {clickedHotspot.animalName}: {clickedHotspot.funFact}\n\n👉 A missão atual procura: {currentMission.continentName} {currentMission.animalIcon}!", new Color(0.12f, 0.35f, 0.65f, 0.95f));
+                ShowInfoCard($"🔍 Você tocou em: {clickedHotspot.continentName}!", $"{clickedHotspot.animalIcon} {clickedHotspot.animalName}: {clickedHotspot.funFact}\n\n👉 A missão atual procura: {currentMission.continentName} {currentMission.animalIcon}!", new Color(0.08f, 0.22f, 0.45f, 0.95f));
             }
         }
 
@@ -549,7 +567,7 @@ namespace ARLab.Geography
 
             TelemetryLogger.Instance?.RegisterQuizAttempt(mission.continentName, true, 1);
 
-            ShowInfoCard($"🎉 PARABÉNS! ACERTOU!", $"Você posicionou e encontrou {mission.continentName} ({mission.animalIcon} {mission.animalName})!\n{mission.successFact}", new Color(0.1f, 0.68f, 0.28f, 0.96f));
+            ShowInfoCard($"🎉 PARABÉNS! ACERTOU!", $"Você posicionou e encontrou {mission.continentName} ({mission.animalIcon} {mission.animalName})!\n{mission.successFact}", new Color(0.06f, 0.65f, 0.32f, 0.96f));
 
             if (mission.hotspot != null)
             {
@@ -568,7 +586,7 @@ namespace ARLab.Geography
             isProcessingAction = true;
             TelemetryLogger.Instance?.RegisterQuizAttempt(mission.continentName, false, 1);
 
-            ShowInfoCard($"❌ Ops! Não estava aí...", $"Observe o globo girando! Vamos mostrar onde fica a {mission.continentName} {mission.animalIcon}...", new Color(0.85f, 0.2f, 0.2f, 0.96f));
+            ShowInfoCard($"❌ Ops! Não estava aí...", $"Observe o globo girando! Vamos mostrar onde fica a {mission.continentName} {mission.animalIcon}...", new Color(0.75f, 0.18f, 0.18f, 0.96f));
 
             if (globeController != null) globeController.enabled = false;
 
@@ -629,7 +647,7 @@ namespace ARLab.Geography
         {
             if (scoreText != null)
             {
-                scoreText.text = $"⭐ Acertos: {correctCount} de {missions.Count}  ({totalScore} pts)";
+                scoreText.text = $"⭐ {totalScore} pts ({correctCount}/{missions.Count})";
             }
         }
 
@@ -638,12 +656,13 @@ namespace ARLab.Geography
             isProcessingAction = true;
             if (gameplayHUDPanel != null) gameplayHUDPanel.SetActive(false);
             if (infoCardPanel != null) infoCardPanel.SetActive(false);
+
             if (victoryPanel != null)
             {
                 victoryPanel.SetActive(true);
                 if (victoryScoreText != null)
                 {
-                    victoryScoreText.text = $"Sessão Finalizada!\nVocê acertou ⭐ {correctCount} de {missions.Count} Continentes!\nTotal de Pontos: {totalScore} pts!";
+                    victoryScoreText.text = $"Parabéns Explorador!\nVocê acertou ⭐ {correctCount} de {missions.Count} Continentes!\nPontuação Total: {totalScore} pts!";
                 }
             }
 
@@ -665,29 +684,127 @@ namespace ARLab.Geography
         private void OnARStateChanged(bool isARActive)
         {
             UpdateARButtonUI(isARActive);
+
+            if (isARActive)
+            {
+                ShowToast("✨ Câmera RA Ativada! Aponte para sua mesa ou chão.", new Color(0.1f, 0.95f, 0.55f));
+            }
+            else
+            {
+                ShowToast("🪐 Modo Espaço Ativado! Fundo cósmico.", new Color(0.4f, 0.75f, 1f));
+            }
         }
 
         public void UpdateARButtonUI(bool isARActive)
         {
             if (btnToggleARCameraText != null)
             {
-                btnToggleARCameraText.text = isARActive ? "🌌 MODO ESPAÇO (DESATIVAR RA)" : "📷 MODO CÂMERA RA (MUNDO REAL)";
+                btnToggleARCameraText.text = isARActive ? "📷" : "🪐";
             }
             if (btnToggleARCameraImage != null)
             {
                 btnToggleARCameraImage.color = isARActive 
-                    ? new Color(0.1f, 0.75f, 0.42f, 0.95f) 
-                    : new Color(0.12f, 0.45f, 0.85f, 0.95f);
+                    ? new Color(0.08f, 0.82f, 0.45f, 0.95f) 
+                    : new Color(0.14f, 0.22f, 0.42f, 0.88f);
             }
         }
 
+        // --- SISTEMA PROCEDURAL DE SPRITES ARREDONDADOS E GLASSMORPHISM ---
+
+        public static Sprite GetRoundedPillSprite()
+        {
+            if (_roundedPillSprite == null)
+            {
+                _roundedPillSprite = CreateRoundedRectSprite(128, 64, 30);
+            }
+            return _roundedPillSprite;
+        }
+
+        public static Sprite GetGlassCardSprite()
+        {
+            if (_glassCardSprite == null)
+            {
+                _glassCardSprite = CreateRoundedRectSprite(128, 128, 24);
+            }
+            return _glassCardSprite;
+        }
+
+        public static Sprite GetCircleSprite()
+        {
+            if (_circleSprite == null)
+            {
+                _circleSprite = CreateCircleSprite(128);
+            }
+            return _circleSprite;
+        }
+
+        private static Sprite CreateRoundedRectSprite(int width, int height, int radius)
+        {
+            var tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            Color32[] cols = new Color32[width * height];
+            float r = radius;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    float dx = 0;
+                    if (x < r) dx = r - x;
+                    else if (x > width - 1 - r) dx = x - (width - 1 - r);
+
+                    float dy = 0;
+                    if (y < r) dy = r - y;
+                    else if (y > height - 1 - r) dy = y - (height - 1 - r);
+
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy);
+                    float alpha = 1f;
+                    if (dist > r)
+                    {
+                        alpha = Mathf.Clamp01(1f - (dist - r));
+                    }
+                    cols[y * width + x] = new Color(1f, 1f, 1f, alpha);
+                }
+            }
+            tex.SetPixels32(cols);
+            tex.Apply();
+            Vector4 border = new Vector4(radius, radius, radius, radius);
+            return Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
+        }
+
+        private static Sprite CreateCircleSprite(int size)
+        {
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            Color32[] cols = new Color32[size * size];
+            float r = size * 0.5f;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dx = x - r + 0.5f;
+                    float dy = y - r + 0.5f;
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy);
+                    float alpha = Mathf.Clamp01(r - dist + 0.5f);
+                    cols[y * size + x] = new Color(1f, 1f, 1f, alpha);
+                }
+            }
+            tex.SetPixels32(cols);
+            tex.Apply();
+            return Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+        }
+
         // Helpers de Construção de UI
-        private static GameObject CreatePanel(GameObject parent, string name, Color color)
+        private static GameObject CreatePanel(GameObject parent, string name, Color color, Sprite sprite = null)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent.transform, false);
             var img = go.AddComponent<Image>();
             img.color = color;
+            if (sprite != null)
+            {
+                img.sprite = sprite;
+                img.type = (sprite.border != Vector4.zero) ? Image.Type.Sliced : Image.Type.Simple;
+            }
             img.raycastTarget = true;
             return go;
         }
@@ -706,20 +823,30 @@ namespace ARLab.Geography
             return t;
         }
 
-        private static Button CreateButton(GameObject parent, string name, string label, Color color, Font font)
+        private static Button CreateRoundedButton(GameObject parent, string name, string label, Color bgColor, Font font, Sprite sprite = null, int fontSize = 28)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent.transform, false);
             var img = go.AddComponent<Image>();
-            img.color = color;
+            img.color = bgColor;
+            if (sprite != null)
+            {
+                img.sprite = sprite;
+                img.type = (sprite.border != Vector4.zero) ? Image.Type.Sliced : Image.Type.Simple;
+            }
             img.raycastTarget = true;
+
             var btn = go.AddComponent<Button>();
+            var colors = btn.colors;
+            colors.highlightedColor = Color.Lerp(bgColor, Color.white, 0.2f);
+            colors.pressedColor = Color.Lerp(bgColor, Color.black, 0.2f);
+            btn.colors = colors;
 
             var textGo = new GameObject("Text");
             textGo.transform.SetParent(go.transform, false);
             var t = textGo.AddComponent<Text>();
             t.text = label;
-            t.fontSize = 28;
+            t.fontSize = fontSize;
             t.color = Color.white;
             t.alignment = TextAnchor.MiddleCenter;
             t.font = font;

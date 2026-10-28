@@ -30,9 +30,9 @@ namespace ARLab.EditorTools
                 globeGo.name = "Globo_Terrestre";
             }
 
-            globeGo.transform.position = new Vector3(0, 1f, -6f);
+            globeGo.transform.position = new Vector3(0, 0.95f, -6f);
             globeGo.transform.rotation = Quaternion.Euler(0, 180f, 0); // Focado na América do Sul
-            globeGo.transform.localScale = Vector3.one * 2.2f;
+            globeGo.transform.localScale = Vector3.one * 1.35f;
 
             // 3. Aplicar Material da Terra (URP Lit com Textura Real)
             Material earthMat = AssetDatabase.LoadAssetAtPath<Material>("Assets/Models/Geography/Earth_Material.mat");
