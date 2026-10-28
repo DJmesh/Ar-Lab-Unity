@@ -61,6 +61,7 @@ namespace ARLab.Geography
         public RectTransform eyeLeftTransform;
         public RectTransform eyeRightTransform;
         public Text btnFoundLabelText;
+        [HideInInspector] public Text btnFoundEyesText;
         private Coroutine eyesAnimationCoroutine;
 
         [Header("Toast Notification")]
@@ -822,7 +823,7 @@ namespace ARLab.Geography
 
         public void LinkHotspots()
         {
-            var hotspots = FindObjectsByType<ContinentHotspot>(FindObjectsSortMode.None);
+            var hotspots = FindObjectsByType<ContinentHotspot>();
             foreach (var h in hotspots)
             {
                 foreach (var m in missions)
@@ -877,6 +878,18 @@ namespace ARLab.Geography
         /// <summary>
         /// Acionado pelo botão lúdico 'ESTOU VENDO ESTE CONTINENTE!'
         /// </summary>
+        public void PlayEyesExcited()
+        {
+            if (eyesLeftPupil != null) eyesLeftPupil.localScale = Vector3.one * 1.3f;
+            if (eyesRightPupil != null) eyesRightPupil.localScale = Vector3.one * 1.3f;
+        }
+
+        public void PlayEyesNormal()
+        {
+            if (eyesLeftPupil != null) eyesLeftPupil.localScale = Vector3.one;
+            if (eyesRightPupil != null) eyesRightPupil.localScale = Vector3.one;
+        }
+
         public void CheckCurrentOrientation()
         {
             if (isProcessingAction || currentMissionIndex >= missions.Count) return;
@@ -886,12 +899,12 @@ namespace ARLab.Geography
 
             if (isFacing)
             {
-                if (btnFoundEyesText != null) btnFoundEyesText.text = "🎉🤩🎉";
+                PlayEyesExcited();
                 StartCoroutine(ProcessSuccessRoutine(mission));
             }
             else
             {
-                if (btnFoundEyesText != null) btnFoundEyesText.text = "👀❓";
+                PlayEyesNormal();
                 StartCoroutine(ProcessFailAndCorrectRoutine(mission));
             }
         }
@@ -907,7 +920,7 @@ namespace ARLab.Geography
 
             if (clickedHotspot.continentName.Trim().Equals(currentMission.continentName.Trim(), StringComparison.OrdinalIgnoreCase))
             {
-                if (btnFoundEyesText != null) btnFoundEyesText.text = "🎉🤩🎉";
+                PlayEyesExcited();
                 StartCoroutine(ProcessSuccessRoutine(currentMission));
             }
             else
