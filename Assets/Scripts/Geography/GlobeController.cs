@@ -105,8 +105,8 @@ namespace ARLab.Geography
             // 2. Fallback para Input Clássico (compatibilidade total com todos os drivers Android)
             if (!hadInput && Input.touchCount >= 2)
             {
-                Touch touchZero = Input.GetTouch(0);
-                Touch touchOne = Input.GetTouch(1);
+                UnityEngine.Touch touchZero = Input.GetTouch(0);
+                UnityEngine.Touch touchOne = Input.GetTouch(1);
 
                 Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
                 Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
@@ -128,8 +128,8 @@ namespace ARLab.Geography
             }
             else if (!hadInput && Input.touchCount == 1)
             {
-                Touch touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Moved)
+                UnityEngine.Touch touch = Input.GetTouch(0);
+                if (touch.phase == UnityEngine.TouchPhase.Moved)
                 {
                     hadInput = true;
                     isInteracting = true;
