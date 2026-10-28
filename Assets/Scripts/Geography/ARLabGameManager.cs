@@ -787,8 +787,7 @@ namespace ARLab.Geography
             SetRect(badgeText.gameObject, 0, 0, 1, 1, 0, 0, 0, 0);
 
             // Frase de Apresentação Alegórica
-            var introDesc = CreateText(introBox, "IntroDesc", "Gire o planeta, explore os 7 continentes
-e descubra os animais do nosso mundo!", 24, new Color(0.88f, 0.94f, 1f), TextAnchor.MiddleCenter, font);
+            var introDesc = CreateText(introBox, "IntroDesc", "Gire o planeta, explore os 7 continentes\ne descubra os animais do nosso mundo!", 24, new Color(0.88f, 0.94f, 1f), TextAnchor.MiddleCenter, font);
             introDesc.fontStyle = FontStyle.Bold;
             var introDescRt = introDesc.GetComponent<RectTransform>();
             introDescRt.anchorMin = new Vector2(0.5f, 0.20f);
