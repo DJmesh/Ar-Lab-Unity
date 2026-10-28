@@ -38,12 +38,15 @@ namespace ARLab.Geography
         public GameObject gameplayHUDPanel;
         public GameObject infoCardPanel;
         public GameObject victoryPanel;
+        public GameObject introSplashPanel;
+        public CanvasGroup introSplashCanvasGroup;
 
         [Header("Textos da Interface")]
         public Text scoreText;
         public Text missionProgressText;
         public Text missionTitleText;
         public Text missionPromptText;
+        public Text missionAvatarText;
         public Text infoCardTitleText;
         public Text infoCardDescriptionText;
         public Text victoryScoreText;
@@ -134,6 +137,7 @@ namespace ARLab.Geography
             LinkHotspots();
             StartDirectExploration();
             StartEyesAnimation();
+            StartIntroTransitionAnimation();
         }
 
         void Update()
@@ -492,30 +496,68 @@ namespace ARLab.Geography
             gameplayHUDPanel = CreatePanel(canvasGo, "GameplayHUD", Color.clear);
             SetRect(gameplayHUDPanel, 0, 0, 1, 1, 0, 0, 0, 0);
 
-            // 1. Top HUD Card (Design Glassmorphic translúcido harmonioso no topo esquerdo)
-            GameObject topCard = CreatePanel(gameplayHUDPanel, "GlassMissionHUD", new Color(0.04f, 0.09f, 0.18f, 0.82f), GetGlassCardSprite());
+            // 1. Top HUD Card (Design Glassmorphic Espaçoso e Lúdico com Emblema do Animal e Textos Grandes)
+            GameObject topCard = CreatePanel(gameplayHUDPanel, "GlassMissionHUD", new Color(0.04f, 0.09f, 0.18f, 0.92f), GetGlassCardSprite());
             var topCardRt = topCard.GetComponent<RectTransform>();
             topCardRt.anchorMin = new Vector2(0f, 1f);
             topCardRt.anchorMax = new Vector2(1f, 1f);
             topCardRt.pivot = new Vector2(0f, 1f);
-            topCardRt.offsetMin = new Vector2(24f, -145f);
-            topCardRt.offsetMax = new Vector2(-280f, -24f);
+            topCardRt.offsetMin = new Vector2(24f, -235f);
+            topCardRt.offsetMax = new Vector2(-280f, -20f);
+
+            var topCardShadow = topCard.AddComponent<Shadow>();
+            topCardShadow.effectColor = new Color(0f, 0f, 0f, 0.55f);
+            topCardShadow.effectDistance = new Vector2(0, -4);
+
+            // Emblema / Avatar Lúdico do Animal da Missão (Lado Esquerdo)
+            var avatarBadge = CreatePanel(topCard, "AnimalAvatarBadge", new Color(0.08f, 0.22f, 0.40f, 0.95f), GetCircleSprite());
+            var avatarRt = avatarBadge.GetComponent<RectTransform>();
+            avatarRt.anchorMin = new Vector2(0f, 0.5f);
+            avatarRt.anchorMax = new Vector2(0f, 0.5f);
+            avatarRt.pivot = new Vector2(0f, 0.5f);
+            avatarRt.anchoredPosition = new Vector2(16f, 0f);
+            avatarRt.sizeDelta = new Vector2(96f, 96f);
+            var avatarGlow = avatarBadge.AddComponent<Shadow>();
+            avatarGlow.effectColor = new Color(0f, 0.92f, 1f, 0.5f);
+            avatarGlow.effectDistance = new Vector2(0, 0);
+
+            missionAvatarText = CreateText(avatarBadge, "AvatarIcon", "🐆", 54, Color.white, TextAnchor.MiddleCenter, font);
+            SetRect(missionAvatarText.gameObject, 0, 0, 1, 1, 0, 0, 0, 0);
+
+            // Container de Conteúdo e Instruções Textuais Ampliadas (Direita do Avatar)
+            var missionContent = CreatePanel(topCard, "MissionContentContainer", Color.clear);
+            var mcRt = missionContent.GetComponent<RectTransform>();
+            mcRt.anchorMin = new Vector2(0f, 0f);
+            mcRt.anchorMax = new Vector2(1f, 1f);
+            mcRt.offsetMin = new Vector2(124f, 10f);
+            mcRt.offsetMax = new Vector2(-16f, -10f);
 
             // Linha superior: Progresso + Pontos
-            missionProgressText = CreateText(topCard, "MissionProgressText", "🎯 Missão 1 de 7", 22, new Color(0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
-            SetRect(missionProgressText.gameObject, 0.05f, 0.65f, 0.58f, 0.95f, 0, 0, 0, 0);
+            missionProgressText = CreateText(missionContent, "MissionProgressText", "🎯 MISSÃO 1 DE 7", 22, new Color(0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
+            missionProgressText.fontStyle = FontStyle.Bold;
+            SetRect(missionProgressText.gameObject, 0f, 0.74f, 0.60f, 1.0f, 0, 0, 0, 0);
 
-            scoreText = CreateText(topCard, "ScoreText", "⭐ 0 pts", 22, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleRight, font);
-            SetRect(scoreText.gameObject, 0.58f, 0.65f, 0.95f, 0.95f, 0, 0, 0, 0);
+            scoreText = CreateText(missionContent, "ScoreText", "⭐ 0 PTS", 22, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleRight, font);
+            scoreText.fontStyle = FontStyle.Bold;
+            SetRect(scoreText.gameObject, 0.60f, 0.74f, 1.0f, 1.0f, 0, 0, 0, 0);
 
-            // Linha central: Nome do Continente e Animal
-            missionTitleText = CreateText(topCard, "MissionTitleText", "🐆 América do Sul", 28, Color.white, TextAnchor.MiddleLeft, font);
+            // Linha central: Nome do Continente Alvo em Grande Destaque
+            missionTitleText = CreateText(missionContent, "MissionTitleText", "América do Sul", 32, Color.white, TextAnchor.MiddleLeft, font);
             missionTitleText.fontStyle = FontStyle.Bold;
-            SetRect(missionTitleText.gameObject, 0.05f, 0.32f, 0.95f, 0.65f, 0, 0, 0, 0);
+            SetRect(missionTitleText.gameObject, 0f, 0.46f, 1.0f, 0.76f, 0, 0, 0, 0);
+            var titleShadow = missionTitleText.gameObject.AddComponent<Shadow>();
+            titleShadow.effectColor = new Color(0f, 0f, 0f, 0.6f);
+            titleShadow.effectDistance = new Vector2(1, -2);
 
-            // Linha inferior: Instrução amigável
-            missionPromptText = CreateText(topCard, "MissionPromptText", "Gire a Terra para posicionar no centro!", 17, new Color(0.82f, 0.90f, 0.98f), TextAnchor.MiddleLeft, font);
-            SetRect(missionPromptText.gameObject, 0.05f, 0.05f, 0.95f, 0.32f, 0, 0, 0, 0);
+            // Linha inferior: Instrução Alegórica em Destaque com Texto Grande e Amarelo Suave
+            missionPromptText = CreateText(missionContent, "MissionPromptText", "👉 Gire o planeta até o Brasil no centro e aperte o botão verde com olhos! 👀", 20, new Color(1.0f, 0.95f, 0.68f), TextAnchor.MiddleLeft, font);
+            missionPromptText.fontStyle = FontStyle.Bold;
+            missionPromptText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            missionPromptText.verticalOverflow = VerticalWrapMode.Truncate;
+            SetRect(missionPromptText.gameObject, 0f, 0.0f, 1.0f, 0.46f, 0, 0, 0, 0);
+            var promptShadow = missionPromptText.gameObject.AddComponent<Shadow>();
+            promptShadow.effectColor = new Color(0f, 0f, 0f, 0.7f);
+            promptShadow.effectDistance = new Vector2(1, -2);
 
             // 2. Botão de Câmera RA Refinado e Elegante no Topo Direito
             btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "", new Color(0.04f, 0.14f, 0.28f, 0.94f), font, GetRoundedPillSprite(), 18);
@@ -684,6 +726,97 @@ namespace ARLab.Geography
 
             victoryPanel.SetActive(false);
 
+            // 7. Tela de Abertura e Transição Cinematográfica Profissional do AR LAB
+            Transform oldIntro = canvasGo.transform.Find("ARLabIntroSplash");
+            if (oldIntro != null) DestroyImmediate(oldIntro.gameObject);
+
+            introSplashPanel = CreatePanel(canvasGo, "ARLabIntroSplash", new Color(0.02f, 0.05f, 0.12f, 0.98f));
+            SetRect(introSplashPanel, 0, 0, 1, 1, 0, 0, 0, 0);
+
+            introSplashCanvasGroup = introSplashPanel.AddComponent<CanvasGroup>();
+            introSplashCanvasGroup.alpha = 1f;
+
+            // Container Central do Logo AR LAB
+            var introBox = CreatePanel(introSplashPanel, "IntroContentBox", Color.clear);
+            var introBoxRt = introBox.GetComponent<RectTransform>();
+            introBoxRt.anchorMin = new Vector2(0.5f, 0.5f);
+            introBoxRt.anchorMax = new Vector2(0.5f, 0.5f);
+            introBoxRt.pivot = new Vector2(0.5f, 0.5f);
+            introBoxRt.sizeDelta = new Vector2(740f, 540f);
+            introBoxRt.anchoredPosition = Vector2.zero;
+
+            // Círculo Holográfico Central com Ícone do Globo
+            var iconCircle = CreatePanel(introBox, "IntroIconCircle", new Color(0.06f, 0.20f, 0.40f, 0.95f), GetCircleSprite());
+            var iconCircleRt = iconCircle.GetComponent<RectTransform>();
+            iconCircleRt.anchorMin = new Vector2(0.5f, 0.82f);
+            iconCircleRt.anchorMax = new Vector2(0.5f, 0.82f);
+            iconCircleRt.pivot = new Vector2(0.5f, 0.5f);
+            iconCircleRt.sizeDelta = new Vector2(130f, 130f);
+            iconCircleRt.anchoredPosition = Vector2.zero;
+            var iconGlow = iconCircle.AddComponent<Shadow>();
+            iconGlow.effectColor = new Color(0f, 0.92f, 1f, 0.6f);
+            iconGlow.effectDistance = new Vector2(0, 0);
+
+            var globeEmoji = CreateText(iconCircle, "GlobeEmoji", "🌍", 68, Color.white, TextAnchor.MiddleCenter, font);
+            SetRect(globeEmoji.gameObject, 0, 0, 1, 1, 0, 0, 0, 0);
+
+            // Título Principal "AR LAB"
+            var introTitle = CreateText(introBox, "IntroTitle", "AR LAB", 72, new Color(0f, 0.95f, 1f), TextAnchor.MiddleCenter, font);
+            introTitle.fontStyle = FontStyle.Bold;
+            var introTitleRt = introTitle.GetComponent<RectTransform>();
+            introTitleRt.anchorMin = new Vector2(0.5f, 0.54f);
+            introTitleRt.anchorMax = new Vector2(0.5f, 0.54f);
+            introTitleRt.pivot = new Vector2(0.5f, 0.5f);
+            introTitleRt.sizeDelta = new Vector2(600f, 90f);
+            introTitleRt.anchoredPosition = Vector2.zero;
+            var introTitleShadow = introTitle.gameObject.AddComponent<Shadow>();
+            introTitleShadow.effectColor = new Color(0f, 0.2f, 0.5f, 0.9f);
+            introTitleShadow.effectDistance = new Vector2(2, -3);
+
+            // Pílula Subtítulo "EXPEDIÇÃO GLOBO TERRESTRE 🚀"
+            var badgePill = CreatePanel(introBox, "IntroBadgePill", new Color(0.08f, 0.24f, 0.44f, 0.95f), GetRoundedPillSprite());
+            var badgePillRt = badgePill.GetComponent<RectTransform>();
+            badgePillRt.anchorMin = new Vector2(0.5f, 0.38f);
+            badgePillRt.anchorMax = new Vector2(0.5f, 0.38f);
+            badgePillRt.pivot = new Vector2(0.5f, 0.5f);
+            badgePillRt.sizeDelta = new Vector2(480f, 48f);
+            badgePillRt.anchoredPosition = Vector2.zero;
+
+            var badgeText = CreateText(badgePill, "BadgeText", "EXPEDIÇÃO GLOBO TERRESTRE 🚀", 22, new Color(1f, 0.88f, 0.25f), TextAnchor.MiddleCenter, font);
+            badgeText.fontStyle = FontStyle.Bold;
+            SetRect(badgeText.gameObject, 0, 0, 1, 1, 0, 0, 0, 0);
+
+            // Frase de Apresentação Alegórica
+            var introDesc = CreateText(introBox, "IntroDesc", "Gire o planeta, explore os 7 continentes
+e descubra os animais do nosso mundo!", 24, new Color(0.88f, 0.94f, 1f), TextAnchor.MiddleCenter, font);
+            introDesc.fontStyle = FontStyle.Bold;
+            var introDescRt = introDesc.GetComponent<RectTransform>();
+            introDescRt.anchorMin = new Vector2(0.5f, 0.20f);
+            introDescRt.anchorMax = new Vector2(0.5f, 0.20f);
+            introDescRt.pivot = new Vector2(0.5f, 0.5f);
+            introDescRt.sizeDelta = new Vector2(640f, 70f);
+            introDescRt.anchoredPosition = Vector2.zero;
+
+            // Botão / Toque para Começar
+            var tapHint = CreateText(introBox, "TapHint", "Toque na tela para iniciar a expedição ▶", 20, new Color(0f, 0.92f, 1f, 0.85f), TextAnchor.MiddleCenter, font);
+            var tapHintRt = tapHint.GetComponent<RectTransform>();
+            tapHintRt.anchorMin = new Vector2(0.5f, 0.05f);
+            tapHintRt.anchorMax = new Vector2(0.5f, 0.05f);
+            tapHintRt.pivot = new Vector2(0.5f, 0.5f);
+            tapHintRt.sizeDelta = new Vector2(500f, 40f);
+            tapHintRt.anchoredPosition = Vector2.zero;
+
+            // Botão invisível em tela cheia para avançar com 1 toque
+            var splashBtn = introSplashPanel.AddComponent<Button>();
+            splashBtn.onClick.AddListener(SkipIntroSplash);
+
+            #if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                introSplashPanel.SetActive(false);
+            }
+            #endif
+
             // Atualiza o estado inicial do botão da câmera RA
             bool isARCurrentlyActive = (arCameraBackground != null && arCameraBackground.IsARActive);
             UpdateARButtonUI(isARCurrentlyActive);
@@ -832,8 +965,8 @@ namespace ARLab.Geography
                 continentName = "América do Sul",
                 animalIcon = "🐆",
                 animalName = "Onça-Pintada",
-                questionPrompt = "Encontre a América do Sul! Gire a Terra até posicioná-la no centro!",
-                successFact = "América do Sul: Floresta Amazônica, Onça-Pintada e o Brasil!"
+                questionPrompt = "👉 Procure o Brasil e a Floresta da Onça! Gire até o centro e aperte o botão verde com olhos! 👀",
+                successFact = "América do Sul: Floresta Amazônica, lar da Onça-Pintada e do Brasil!"
             });
 
             missions.Add(new ContinentMission
@@ -841,7 +974,7 @@ namespace ARLab.Geography
                 continentName = "África",
                 animalIcon = "🐘",
                 animalName = "Elefante",
-                questionPrompt = "Onde vive o grande Elefante nas savanas? Gire o globo até a África!",
+                questionPrompt = "👉 Onde vive o grande Elefante? Gire a Terra até as savanas da África e aperte o botão verde! 👀",
                 successFact = "África: terra de grandes elefantes, zebras e girafas sob o sol da savana!"
             });
 
@@ -850,8 +983,8 @@ namespace ARLab.Geography
                 continentName = "Europa",
                 animalIcon = "🦊",
                 animalName = "Raposa",
-                questionPrompt = "Logo acima da África, encontre a Europa! Gire até ela aparecer no centro!",
-                successFact = "Europa: ao norte da África, com florestas temperadas e belos castelos!"
+                questionPrompt = "👉 Acima da África fica a Europa! Ache a terra da esperta Raposa e aperte o botão verde! 👀",
+                successFact = "Europa: ao norte da África, com florestas temperadas, belos castelos e raposas!"
             });
 
             missions.Add(new ContinentMission
@@ -859,8 +992,8 @@ namespace ARLab.Geography
                 continentName = "Ásia",
                 animalIcon = "🐼",
                 animalName = "Urso Panda",
-                questionPrompt = "Procure o maior continente da Terra onde vive o Urso Panda! Encontre a Ásia!",
-                successFact = "Ásia: o maior continente do planeta, lar dos Montes Himalaias e do Panda!"
+                questionPrompt = "👉 Ache o maior continente com florestas de bambu (Ásia) e aperte o botão verde com olhos! 👀",
+                successFact = "Ásia: o maior continente da Terra, lar dos Montes Himalaias e do Urso Panda!"
             });
 
             missions.Add(new ContinentMission
@@ -868,8 +1001,8 @@ namespace ARLab.Geography
                 continentName = "Oceania",
                 animalIcon = "🐢",
                 animalName = "Tartaruga Marinha",
-                questionPrompt = "Onde as tartarugas nadam pelos corais azuis? Gire até a Oceania!",
-                successFact = "Oceania: Austrália, ilhas tropicais e a Grande Barreira de Corais!"
+                questionPrompt = "👉 Onde as tartarugas nadam pelos corais azuis? Gire até a Oceania e aperte o botão verde! 👀",
+                successFact = "Oceania: Austrália, ilhas tropicais e a Grande Barreira de Corais da tartaruga!"
             });
 
             missions.Add(new ContinentMission
@@ -877,8 +1010,8 @@ namespace ARLab.Geography
                 continentName = "América do Norte",
                 animalIcon = "🐻",
                 animalName = "Urso Pardo",
-                questionPrompt = "Encontre as terras altas do Urso Pardo e montanhas nevadas na América do Norte!",
-                successFact = "América do Norte: grandes montanhas rochosas, lagos gigantes e florestas de pinheiros!"
+                questionPrompt = "👉 Encontre as montanhas e florestas do Urso Pardo na América do Norte e aperte o botão verde! 👀",
+                successFact = "América do Norte: grandes montanhas rochosas, pinheiros e o Urso Pardo!"
             });
 
             missions.Add(new ContinentMission
@@ -886,8 +1019,8 @@ namespace ARLab.Geography
                 continentName = "Antártida",
                 animalIcon = "🐧",
                 animalName = "Pinguim",
-                questionPrompt = "Gire o globo para ver o polo sul gelado onde vivem os pinguins na Antártida!",
-                successFact = "Antártida: o continente mais frio do mundo, todo coberto de gelo e pinguins!"
+                questionPrompt = "👉 Gire a Terra até o polo sul de gelo onde o Pinguim escorrega e aperte o botão verde! 👀",
+                successFact = "Antártida: o continente mais frio do planeta, coberto de gelo e colônias de pinguins!"
             });
         }
 
@@ -935,14 +1068,17 @@ namespace ARLab.Geography
             isProcessingAction = false;
             var mission = missions[currentMissionIndex];
 
+            if (missionAvatarText != null)
+                missionAvatarText.text = mission.animalIcon;
+
             if (missionTitleText != null)
-                missionTitleText.text = $"{mission.animalIcon} Missão: {mission.continentName}";
+                missionTitleText.text = mission.continentName;
 
             if (missionPromptText != null)
                 missionPromptText.text = mission.questionPrompt;
 
             if (missionProgressText != null)
-                missionProgressText.text = $"🎯 Missão {currentMissionIndex + 1} de {missions.Count}";
+                missionProgressText.text = $"🎯 MISSÃO {currentMissionIndex + 1} DE {missions.Count}";
         }
 
         /// <summary>
@@ -1090,6 +1226,131 @@ namespace ARLab.Geography
             {
                 scoreText.text = $"⭐ {totalScore} pts ({correctCount}/{missions.Count})";
             }
+        }
+
+                // ==========================================
+        // ANIMAÇÃO DE TRANSIÇÃO E ABERTURA AR LAB
+        // ==========================================
+        private Coroutine introAnimationCoroutine;
+        private bool isIntroFinished = false;
+
+        public void StartIntroTransitionAnimation()
+        {
+            if (introAnimationCoroutine != null) StopCoroutine(introAnimationCoroutine);
+            introAnimationCoroutine = StartCoroutine(PlayIntroAnimationRoutine());
+        }
+
+        public void SkipIntroSplash()
+        {
+            if (isIntroFinished) return;
+            isIntroFinished = true;
+            if (introAnimationCoroutine != null) StopCoroutine(introAnimationCoroutine);
+            StartCoroutine(FastFadeOutIntro());
+        }
+
+        private IEnumerator PlayIntroAnimationRoutine()
+        {
+            isIntroFinished = false;
+
+            if (introSplashPanel != null) introSplashPanel.SetActive(true);
+
+            // Mantém a HUD inicial transparente para entrada cinematográfica
+            CanvasGroup hudCg = gameplayHUDPanel != null ? gameplayHUDPanel.GetComponent<CanvasGroup>() : null;
+            if (hudCg == null && gameplayHUDPanel != null) hudCg = gameplayHUDPanel.AddComponent<CanvasGroup>();
+            if (hudCg != null) hudCg.alpha = 0f;
+
+            Transform introBox = introSplashPanel != null ? introSplashPanel.transform.Find("IntroContentBox") : null;
+            if (introBox != null) introBox.localScale = Vector3.one * 0.70f;
+            if (introSplashCanvasGroup != null) introSplashCanvasGroup.alpha = 1f;
+
+            // Posição inicial cósmica da Terra durante a tela de abertura
+            if (globeTransform != null)
+            {
+                globeTransform.rotation = Quaternion.Euler(15f, 75f, -10f);
+            }
+
+            // 1. Zoom in e fade in suave do Logo AR LAB (0.65s)
+            float elapsed = 0f;
+            float durIn = 0.65f;
+            while (elapsed < durIn)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / durIn);
+                float scale = Mathf.Lerp(0.70f, 1.04f, Mathf.Sin(t * Mathf.PI * 0.5f));
+                if (t >= 0.85f) scale = Mathf.Lerp(1.04f, 1.0f, (t - 0.85f) / 0.15f);
+
+                if (introBox != null) introBox.localScale = Vector3.one * scale;
+
+                // Gira suavemente a Terra em direção ao foco inicial
+                if (globeTransform != null)
+                {
+                    globeTransform.rotation = Quaternion.Slerp(Quaternion.Euler(15f, 75f, -10f), Quaternion.Euler(0, 180f, 0), t);
+                }
+
+                yield return null;
+            }
+            if (introBox != null) introBox.localScale = Vector3.one;
+
+            // 2. Tempo de visualização profissional com pulso suave (1.6s)
+            elapsed = 0f;
+            float durHold = 1.6f;
+            while (elapsed < durHold && !isIntroFinished)
+            {
+                elapsed += Time.deltaTime;
+                float pulse = 1.0f + 0.02f * Mathf.Sin(elapsed * 4f);
+                if (introBox != null) introBox.localScale = Vector3.one * pulse;
+                yield return null;
+            }
+
+            // 3. Transição de saída suave revelando o globo e a interface (0.55s)
+            yield return StartCoroutine(FastFadeOutIntro());
+        }
+
+        private IEnumerator FastFadeOutIntro()
+        {
+            CanvasGroup hudCg = gameplayHUDPanel != null ? gameplayHUDPanel.GetComponent<CanvasGroup>() : null;
+            Transform introBox = introSplashPanel != null ? introSplashPanel.transform.Find("IntroContentBox") : null;
+
+            float elapsed = 0f;
+            float durOut = 0.55f;
+            float startAlpha = (introSplashCanvasGroup != null) ? introSplashCanvasGroup.alpha : 1f;
+
+            // Desliza a HUD do topo para baixo suavemente
+            RectTransform topCardRt = gameplayHUDPanel != null ? gameplayHUDPanel.transform.Find("GlassMissionHUD")?.GetComponent<RectTransform>() : null;
+            Vector2 topCardTarget = topCardRt != null ? topCardRt.anchoredPosition : Vector2.zero;
+            Vector2 topCardStart = topCardTarget + new Vector2(0, 120f);
+
+            while (elapsed < durOut)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / durOut);
+
+                if (introSplashCanvasGroup != null)
+                {
+                    introSplashCanvasGroup.alpha = Mathf.Lerp(startAlpha, 0f, t);
+                }
+                if (introBox != null)
+                {
+                    introBox.localScale = Vector3.one * Mathf.Lerp(1f, 1.10f, t);
+                }
+                if (hudCg != null)
+                {
+                    hudCg.alpha = Mathf.Lerp(0f, 1f, t);
+                }
+                if (topCardRt != null)
+                {
+                    topCardRt.anchoredPosition = Vector2.Lerp(topCardStart, topCardTarget, Mathf.SmoothStep(0, 1, t));
+                }
+
+                yield return null;
+            }
+
+            if (introSplashCanvasGroup != null) introSplashCanvasGroup.alpha = 0f;
+            if (introSplashPanel != null) introSplashPanel.SetActive(false);
+            if (hudCg != null) hudCg.alpha = 1f;
+            if (topCardRt != null) topCardRt.anchoredPosition = topCardTarget;
+
+            isIntroFinished = true;
         }
 
         private void EndGameSession()
