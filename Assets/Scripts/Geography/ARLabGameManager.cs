@@ -286,9 +286,39 @@ namespace ARLab.Geography
                 pedMr.material = mat;
             }
 
-            // 2. Limpeza de hierarquias antigas para reconstrução limpa e confiável
-            Transform oldPivot = pinGo.transform.Find("AnimalPivot");
-            if (oldPivot != null) DestroyImmediate(oldPivot.gameObject);
+            // 2. Preserva modelos 3D já existentes e salvos na cena (CRUCIAL para Android e runtime!)
+            Transform existingPivot = pinGo.transform.Find("AnimalPivot");
+            if (existingPivot != null && existingPivot.childCount > 0)
+            {
+                // Garante que o pivô tenha rotação e escala unitária correta
+                existingPivot.localScale = Vector3.one;
+                existingPivot.localPosition = new Vector3(0, elevationY, 0);
+
+                if (existingPivot.GetComponent<Animal3DRotator>() == null)
+                {
+                    var r = existingPivot.gameObject.AddComponent<Animal3DRotator>();
+                    r.rotationSpeed = 22f;
+                    r.bobbingAmplitude = 0.003f;
+                }
+
+                // Garante collider e hotspot
+                var c = pinGo.GetComponent<SphereCollider>();
+                if (c == null) c = pinGo.AddComponent<SphereCollider>();
+                c.radius = 0.16f;
+                c.center = new Vector3(0, elevationY, 0);
+
+                var h = pinGo.GetComponent<ContinentHotspot>();
+                if (h == null) h = pinGo.AddComponent<ContinentHotspot>();
+                h.continentName = continent;
+                h.animalIcon = icon;
+                h.animalName = animal;
+                h.funFact = fact;
+                h.baseColor = color;
+                return;
+            }
+
+            // Se não existia, limpa eventuais sobras antes de criar
+            if (existingPivot != null) DestroyImmediate(existingPivot.gameObject);
             Transform oldModel = pinGo.transform.Find("AnimalModel");
             if (oldModel != null) DestroyImmediate(oldModel.gameObject);
 
@@ -304,98 +334,100 @@ namespace ARLab.Geography
             rotator.rotationSpeed = 22f;
             rotator.bobbingAmplitude = 0.003f;
 
+            GameObject prefab = null;
             #if UNITY_EDITOR
             if (!string.IsNullOrEmpty(modelPath))
             {
-                var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
-                if (prefab != null)
-                {
-                    GameObject modelGo = Instantiate(prefab);
-                    modelGo.name = "AnimalModel";
-                    modelGo.transform.SetParent(pivotGo.transform, false);
-                    modelGo.transform.localRotation = Quaternion.Euler(modelEulerAngles);
-                    modelGo.transform.localPosition = modelOffset;
-
-                    // Lógica de Normalização Universal: Garante que todos os 7 animais tenham rigorosamente a mesma dimensão visual (~0.18m)
-                    float detectedMaxDim = 0f;
-                    var meshFilters = modelGo.GetComponentsInChildren<MeshFilter>(true);
-                    foreach (var mf in meshFilters)
-                    {
-                        if (mf.sharedMesh != null)
-                        {
-                            Vector3 sz = mf.sharedMesh.bounds.size;
-                            float dim = Mathf.Max(sz.x, Mathf.Max(sz.y, sz.z));
-                            if (dim > detectedMaxDim) detectedMaxDim = dim;
-                        }
-                    }
-                    var skinnedRends = modelGo.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-                    foreach (var smr in skinnedRends)
-                    {
-                        if (smr.sharedMesh != null)
-                        {
-                            Vector3 sz = smr.sharedMesh.bounds.size;
-                            float dim = Mathf.Max(sz.x, Mathf.Max(sz.y, sz.z));
-                            if (dim > detectedMaxDim) detectedMaxDim = dim;
-                        }
-                    }
-
-                    // Se a malha geométrica for detectada, unifica com base na dimensão máxima alvo de 0.18m, senão usa o targetSize calibrado
-                    float unifiedScale = (detectedMaxDim > 0.005f) ? (0.18f / detectedMaxDim) : targetSize;
-
-                    // Ajuste exclusivo da Tartaruga Marinha (cujo FBX possui escala interna de 100x nos nós filhos)
-                    if (goName == "Pin_Oceania" || (!string.IsNullOrEmpty(modelPath) && modelPath.Contains("Turtle")))
-                    {
-                        unifiedScale = 0.185f;
-                    }
-
-                    modelGo.transform.localScale = Vector3.one * unifiedScale;
-
-                    // Aplica materiais URP Lit com texturas e cores fiéis
-                    Shader s = Shader.Find("Universal Render Pipeline/Lit");
-                    if (s == null) s = Shader.Find("Standard");
-
-                    Texture2D tex = !string.IsNullOrEmpty(texturePath) 
-                        ? UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath) 
-                        : null;
-                    Texture2D normalTex = !string.IsNullOrEmpty(normalPath) 
-                        ? UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(normalPath) 
-                        : null;
-
-                    var rends = modelGo.GetComponentsInChildren<Renderer>(true);
-                    foreach (var r in rends)
-                    {
-                        int matCount = Mathf.Max(1, (r.sharedMaterials != null) ? r.sharedMaterials.Length : 1);
-                        Material[] newMats = new Material[matCount];
-                        for (int m = 0; m < matCount; m++)
-                        {
-                            var mat = new Material(s);
-                            if (tex != null)
-                            {
-                                mat.SetTexture("_BaseMap", tex);
-                                mat.mainTexture = tex;
-                                mat.SetColor("_BaseColor", Color.white);
-                                mat.color = Color.white;
-                            }
-                            else
-                            {
-                                mat.SetColor("_BaseColor", animalColor);
-                                mat.color = animalColor;
-                            }
-
-                            if (normalTex != null)
-                            {
-                                mat.EnableKeyword("_NORMALMAP");
-                                mat.SetTexture("_BumpMap", normalTex);
-                            }
-
-                            mat.SetFloat("_Smoothness", 0.35f);
-                            newMats[m] = mat;
-                        }
-                        r.materials = newMats;
-                    }
-                }
+                prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             }
             #endif
+
+            // Fallback universal para Android e builds runtime via Resources
+            if (prefab == null && !string.IsNullOrEmpty(modelPath))
+            {
+                string resName = System.IO.Path.GetFileNameWithoutExtension(modelPath);
+                prefab = Resources.Load<GameObject>("Animals/" + resName);
+            }
+
+            if (prefab != null)
+            {
+                GameObject modelGo = Instantiate(prefab);
+                modelGo.name = "AnimalModel";
+                modelGo.transform.SetParent(pivotGo.transform, false);
+                modelGo.transform.localRotation = Quaternion.Euler(modelEulerAngles);
+                modelGo.transform.localPosition = modelOffset;
+
+                // Lógica de Normalização Universal: Garante que todos os 7 animais tenham rigorosamente a mesma dimensão visual (~0.18m)
+                float detectedMaxDim = 0f;
+                var meshFilters = modelGo.GetComponentsInChildren<MeshFilter>(true);
+                foreach (var mf in meshFilters)
+                {
+                    if (mf.sharedMesh != null)
+                    {
+                        Vector3 sz = Vector3.Scale(mf.sharedMesh.bounds.size, mf.transform.localScale);
+                        float dim = Mathf.Max(sz.x, Mathf.Max(sz.y, sz.z));
+                        if (dim > detectedMaxDim) detectedMaxDim = dim;
+                    }
+                }
+                var skinnedRends = modelGo.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                foreach (var smr in skinnedRends)
+                {
+                    if (smr.sharedMesh != null)
+                    {
+                        Vector3 sz = Vector3.Scale(smr.sharedMesh.bounds.size, smr.transform.localScale);
+                        float dim = Mathf.Max(sz.x, Mathf.Max(sz.y, sz.z));
+                        if (dim > detectedMaxDim) detectedMaxDim = dim;
+                    }
+                }
+
+                // Se a malha geométrica for detectada, unifica com base na dimensão máxima alvo de 0.18m, senão usa o targetSize calibrado
+                float unifiedScale = (detectedMaxDim > 0.005f) ? (0.18f / detectedMaxDim) : targetSize;
+
+                // Ajuste exclusivo da Tartaruga Marinha (cujo FBX possui escala interna de 100x nos nós filhos)
+                if (goName == "Pin_Oceania" || (!string.IsNullOrEmpty(modelPath) && modelPath.Contains("Turtle")))
+                {
+                    unifiedScale = 0.185f;
+                }
+
+                modelGo.transform.localScale = Vector3.one * unifiedScale;
+
+                // Aplica materiais URP Lit com texturas e cores fiéis
+                Shader s = Shader.Find("Universal Render Pipeline/Lit");
+                if (s == null) s = Shader.Find("Standard");
+
+                Texture2D tex = null;
+                #if UNITY_EDITOR
+                if (!string.IsNullOrEmpty(texturePath))
+                    tex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+                #endif
+
+                var rends = modelGo.GetComponentsInChildren<Renderer>(true);
+                foreach (var r in rends)
+                {
+                    int matCount = Mathf.Max(1, (r.sharedMaterials != null) ? r.sharedMaterials.Length : 1);
+                    Material[] newMats = new Material[matCount];
+                    for (int m = 0; m < matCount; m++)
+                    {
+                        var mat = new Material(s);
+                        if (tex != null)
+                        {
+                            mat.SetTexture("_BaseMap", tex);
+                            mat.mainTexture = tex;
+                            mat.SetColor("_BaseColor", Color.white);
+                            mat.color = Color.white;
+                        }
+                        else
+                        {
+                            mat.SetColor("_BaseColor", animalColor);
+                            mat.color = animalColor;
+                        }
+
+                        mat.SetFloat("_Smoothness", 0.35f);
+                        newMats[m] = mat;
+                    }
+                    r.materials = newMats;
+                }
+            }
 
             // 4. Collider tátil ampliado para a nova escala
             var col = pinGo.GetComponent<SphereCollider>();
