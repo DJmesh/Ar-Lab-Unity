@@ -11,11 +11,28 @@ namespace ARLab.EditorTools
         [MenuItem("AR Lab/5. Gerar APK para Celular (Android)")]
         public static void BuildAPK()
         {
-            if (EditorApplication.isPlaying)
+            if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isPlaying)
             {
+                Debug.Log("<color=#00E5FF><b>[AR Lab]</b></color> Encerrando Modo Play para iniciar a compilação do APK automaticamente...");
+                EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
                 EditorApplication.isPlaying = false;
+                return;
             }
 
+            ExecuteBuild();
+        }
+
+        private static void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.EnteredEditMode)
+            {
+                EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+                EditorApplication.delayCall += ExecuteBuild;
+            }
+        }
+
+        private static void ExecuteBuild()
+        {
             // 1. Configurar APIs Gráficas Universais (Vulkan + OpenGLES 3 automático para 100% dos celulares Android)
             PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, true);
 
@@ -23,12 +40,17 @@ namespace ARLab.EditorTools
             PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
 
-            // 3. Garante que a cena SampleScene está aberta, gerada e SALVA NO DISCO
+            // 3. Garante que a cena SampleScene está aberta, gerada e salva no disco
             string scenePath = "Assets/Scenes/SampleScene.unity";
-            var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+            var activeScene = EditorSceneManager.GetActiveScene();
+            if (activeScene.path != scenePath)
+            {
+                activeScene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+            }
+
             SetupARLabUI.BuildCompleteUI();
-            EditorSceneManager.MarkSceneDirty(scene);
-            EditorSceneManager.SaveScene(scene, scenePath);
+            EditorSceneManager.MarkSceneDirty(activeScene);
+            EditorSceneManager.SaveScene(activeScene, scenePath);
             AssetDatabase.SaveAssets();
 
             // 4. Diretório de saída

@@ -15,7 +15,7 @@ namespace ARLab.EditorTools
 
         private static void AutoSetupOnLoad()
         {
-            if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+            if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isPlaying) return;
 
             string scenePath = "Assets/Scenes/SampleScene.unity";
             var active = EditorSceneManager.GetActiveScene();
@@ -30,6 +30,12 @@ namespace ARLab.EditorTools
         [MenuItem("AR Lab/2. Criar Menu e Sistema de Pontuação Completo")]
         public static void BuildCompleteUI()
         {
+            if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isPlaying)
+            {
+                Debug.LogWarning("[AR Lab] Não é possível reconfigurar a cena no disco durante o Play Mode. Pare o Play Mode primeiro.");
+                return;
+            }
+
             string scenePath = "Assets/Scenes/SampleScene.unity";
             var scene = EditorSceneManager.GetActiveScene();
             if (scene.path != scenePath)
