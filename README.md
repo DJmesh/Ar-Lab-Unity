@@ -187,7 +187,7 @@ A fundamentação teórica e a metodologia experimental planejada estão no arti
 | Equipamento | Característica relevante | Utilização |
 |---|---|---|
 | Computador de desenvolvimento | Ubuntu 24.04.4 LTS, 30 GiB de RAM | Desenvolvimento Unity, simulação e geração do APK |
-| Smartphone Android | Android 8.0+ com câmera traseira; APK instalado diretamente (sideload) | Testes reais do modo câmera RA e dos controles de toque |
+| Smartphone Motorola Moto G Edge 50 | Android, câmera traseira; APK instalado diretamente (sideload) | Testes reais do modo câmera RA e dos controles de toque |
 | Unity Device Simulator | Perfil “Punch Hole Center (1440x3088)” | Testes de layout e interação no Editor |
 
 > Compatibilidade só é declarada para equipamentos efetivamente utilizados. Veja a [seção 21](#21-dispositivos-testados).
@@ -506,10 +506,10 @@ Somente testes efetivamente realizados são registrados.
 
 | Dispositivo | Sistema | Versão | Resultado |
 |---|---|---|---|
-| Smartphone Android da equipe (APK instalado por *sideload*) | Android | 8.0+ (API 26+ exigida pelo build) | Câmera RA e interação por toque funcionaram (ver evidência) |
+| Motorola Moto G Edge 50 (APK instalado por *sideload*) | Android | Versão exata não registrada (build exige API 26+) | Compatível: câmera RA e interação por toque funcionaram (ver evidência) |
 | Unity Device Simulator — Punch Hole Center 1440×3088 | Editor Unity 6000.6.0f1 (Ubuntu 24.04) | — | Layout e interação validados |
 
-> Fabricante, modelo e versão exata do Android do aparelho físico devem ser registrados nesta tabela pela equipe. Nenhuma compatibilidade é declarada para dispositivos não testados, nem para iOS.
+> Nenhuma compatibilidade é declarada para dispositivos não testados, nem para iOS.
 
 ---
 
@@ -518,7 +518,7 @@ Somente testes efetivamente realizados são registrados.
 - **Não há rastreamento espacial:** sem AR Foundation/ARCore, o globo não se ancora a superfícies reais e não acompanha o movimento do aparelho (apenas sobreposição sobre o vídeo).
 - Apenas **Android** é suportado; iOS não foi configurado nem testado.
 - O desempenho (FPS, aquecimento, consumo de bateria) **não foi medido formalmente**.
-- Testado em **um** smartphone físico; compatibilidade ampla não comprovada.
+- Testado em **um** smartphone físico (Motorola Moto G Edge 50); compatibilidade ampla não comprovada.
 - O modo Câmera RA depende de **permissão de câmera** e de iluminação adequada para boa visualização.
 - A escala Smilyometer (`SmilyometerUI`) e o modo de quiz por regiões não fazem parte do fluxo principal.
 - Identificador do pacote Android ainda é o padrão do template Unity (`com.UnityTechnologies.com.unity.template.urpblank`) e o *company name* é `DefaultCompany`; devem ser personalizados antes de qualquer publicação.
