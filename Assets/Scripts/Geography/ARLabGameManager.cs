@@ -187,37 +187,53 @@ namespace ARLab.Geography
                 globeController = globe.AddComponent<GlobeController>();
             }
 
-            // 7 Continentes com Modelos 3D Reais de Animais Ampliados e Texturizados Fielmente
+            // 7 Continentes com Modelos 3D Reais de Animais Ampliados, Orientados e Elevados com Precisão
+            // 1. América do Sul: Onça-Pintada
             EnsurePin(globe, "Pin_AmericaDoSul", "América do Sul", "🐆", "Onça-Pintada", "Floresta Amazônica e o Brasil!", 
                 new Vector3(0.293f, -0.096f, -0.431f), new Color(1f, 0.85f, 0.1f), 
-                "Assets/Models/Animals/Tiger/Tiger.fbx", "Assets/Models/Animals/Tiger/texture.png", "Assets/Models/Animals/Tiger/NormalMap.png", 0.34f, new Color(0.96f, 0.68f, 0.12f));
+                "Assets/Models/Animals/Tiger/Tiger.fbx", "Assets/Models/Animals/Tiger/texture.png", "Assets/Models/Animals/Tiger/NormalMap.png", 
+                0.34f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.96f, 0.68f, 0.12f));
 
+            // 2. África: Elefante Africano
             EnsurePin(globe, "Pin_Africa", "África", "🐘", "Elefante", "Grandes savanas africanas com elefantes, zebras e girafas!", 
                 new Vector3(0.490f, 0.000f, 0.203f), new Color(1f, 0.48f, 0.08f), 
-                "Assets/Models/Animals/Elephant/Elephant.fbx", "Assets/Models/Animals/Elephant/Elephant.png", null, 0.34f, new Color(0.48f, 0.50f, 0.53f));
+                "Assets/Models/Animals/Elephant/Elephant.fbx", "Assets/Models/Animals/Elephant/Elephant.png", null, 
+                0.34f, 0.025f, Vector3.zero, Vector3.zero, new Color(0.48f, 0.50f, 0.53f));
 
+            // 3. Europa: Raposa (com rotação compensatória -90 em X para ficar em pé)
             EnsurePin(globe, "Pin_Europa", "Europa", "🦊", "Raposa", "Ao norte da África, com florestas temperadas e belos castelos!", 
                 new Vector3(0.293f, 0.431f, 0.096f), new Color(0.18f, 0.55f, 1f), 
-                "Assets/Models/Animals/Fox/Fox.obj", "Assets/Models/Animals/Fox/Fox.png", null, 0.30f, new Color(0.92f, 0.42f, 0.08f));
+                "Assets/Models/Animals/Fox/Fox.obj", "Assets/Models/Animals/Fox/Fox.png", null, 
+                0.30f, 0.022f, new Vector3(-90f, 0f, 0f), Vector3.zero, new Color(0.92f, 0.42f, 0.08f));
 
+            // 4. Ásia: Urso Panda (elevado para ficar 100% sobre o pedestal e não afundado)
             EnsurePin(globe, "Pin_Asia", "Ásia", "🐼", "Urso Panda", "O maior continente da Terra, lar das florestas de bambu e do Panda!", 
                 new Vector3(0.000f, 0.297f, 0.439f), new Color(0.95f, 0.2f, 0.35f), 
-                "Assets/Models/Animals/Panda/Panda.fbx", "Assets/Models/Animals/Panda/Panda.png", null, 0.34f, new Color(0.92f, 0.92f, 0.92f));
+                "Assets/Models/Animals/Panda/Panda.fbx", "Assets/Models/Animals/Panda/Panda.png", null, 
+                0.34f, 0.055f, Vector3.zero, new Vector3(0f, 0.02f, 0f), new Color(0.92f, 0.92f, 0.92f));
 
+            // 5. Oceania: Tartaruga Marinha (afastada da base flutuando no oceano, com rotação suave de nado)
             EnsurePin(globe, "Pin_Oceania", "Oceania", "🐢", "Tartaruga Marinha", "Austrália e ilhas cercadas pela Grande Barreira de Corais!", 
                 new Vector3(-0.328f, -0.255f, 0.328f), new Color(0.15f, 0.9f, 0.35f), 
-                "Assets/Models/Animals/Turtle/Turtle.fbx", "Assets/Models/Animals/Turtle/Turtle.png", null, 0.34f, new Color(0.18f, 0.68f, 0.35f));
+                "Assets/Models/Animals/Turtle/Turtle.fbx", "Assets/Models/Animals/Turtle/Turtle.png", null, 
+                0.36f, 0.085f, new Vector3(15f, 0f, 0f), Vector3.zero, new Color(0.18f, 0.72f, 0.38f));
 
+            // 6. América do Norte: Urso Pardo (nivelado perfeitamente no pedestal)
             EnsurePin(globe, "Pin_AmericaDoNorte", "América do Norte", "🐻", "Urso Pardo", "Florestas de pinheiros, grandes montanhas rochosas e o Urso Pardo!", 
                 new Vector3(-0.094f, 0.368f, -0.369f), new Color(0.7f, 0.25f, 0.95f), 
-                "Assets/Models/Animals/Bear/Bear.fbx", "Assets/Models/Animals/Bear/Bear.png", null, 0.34f, new Color(0.45f, 0.28f, 0.15f));
+                "Assets/Models/Animals/Bear/Bear.fbx", "Assets/Models/Animals/Bear/Bear.png", null, 
+                0.34f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.45f, 0.28f, 0.15f));
 
+            // 7. Antártida: Pinguim Imperial (ereto e destacado sobre o pedestal de gelo)
             EnsurePin(globe, "Pin_Antartida", "Antártida", "🐧", "Pinguim", "O polo sul congelado coberto de gelo e colônias de pinguins!", 
                 new Vector3(0.107f, -0.519f, 0.000f), new Color(0.85f, 0.95f, 1f), 
-                "Assets/Models/Animals/Penguin/Penguin.fbx", "Assets/Models/Animals/Penguin/Penguin(Skin).png", null, 0.32f, new Color(0.12f, 0.14f, 0.18f));
+                "Assets/Models/Animals/Penguin/Penguin.fbx", "Assets/Models/Animals/Penguin/Penguin(Skin).png", null, 
+                0.34f, 0.040f, Vector3.zero, Vector3.zero, new Color(0.12f, 0.14f, 0.18f));
         }
 
-        private void EnsurePin(GameObject globe, string goName, string continent, string icon, string animal, string fact, Vector3 localPos, Color color, string modelPath = null, string texturePath = null, string normalPath = null, float targetSize = 0.34f, Color? animalColorOverride = null)
+        private void EnsurePin(GameObject globe, string goName, string continent, string icon, string animal, string fact, 
+            Vector3 localPos, Color color, string modelPath, string texturePath, string normalPath, 
+            float targetSize, float elevationY, Vector3 modelEulerAngles, Vector3 modelOffset, Color animalColor)
         {
             Transform existing = globe.transform.Find(goName);
             GameObject pinGo = existing != null ? existing.gameObject : null;
@@ -239,7 +255,7 @@ namespace ARLab.Geography
             pinGo.transform.localRotation = Quaternion.FromToRotation(Vector3.up, normal);
             pinGo.transform.localScale = Vector3.one;
 
-            // 1. Pedestal Holográfico Fino e Elegante (disco fino para os pés não afundarem)
+            // 1. Pedestal Holográfico Fino e Elegante
             Transform pedTr = pinGo.transform.Find("Pedestal");
             GameObject pedestal = pedTr != null ? pedTr.gameObject : null;
             if (pedestal == null)
@@ -265,14 +281,23 @@ namespace ARLab.Geography
                 pedMr.material = mat;
             }
 
-            // 2. Modelo 3D Real do Animal (Substitui instâncias antigas para aplicar novas dimensões e texturas)
-            Transform modelTr = pinGo.transform.Find("AnimalModel");
-            if (modelTr != null)
-            {
-                DestroyImmediate(modelTr.gameObject);
-            }
+            // 2. Limpeza de hierarquias antigas para reconstrução limpa e confiável
+            Transform oldPivot = pinGo.transform.Find("AnimalPivot");
+            if (oldPivot != null) DestroyImmediate(oldPivot.gameObject);
+            Transform oldModel = pinGo.transform.Find("AnimalModel");
+            if (oldModel != null) DestroyImmediate(oldModel.gameObject);
 
-            GameObject animalGo = null;
+            // 3. Pivô do Animal (perpendicular à superfície da Terra no continente)
+            GameObject pivotGo = new GameObject("AnimalPivot");
+            pivotGo.transform.SetParent(pinGo.transform, false);
+            pivotGo.transform.localPosition = new Vector3(0, elevationY, 0);
+            pivotGo.transform.localRotation = Quaternion.identity;
+            pivotGo.transform.localScale = Vector3.one;
+
+            // Rotação suave do animal em torno do seu próprio eixo no continente
+            var rotator = pivotGo.AddComponent<Animal3DRotator>();
+            rotator.rotationSpeed = 22f;
+            rotator.bobbingAmplitude = 0.003f;
 
             #if UNITY_EDITOR
             if (!string.IsNullOrEmpty(modelPath))
@@ -280,48 +305,37 @@ namespace ARLab.Geography
                 var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
                 if (prefab != null)
                 {
-                    animalGo = Instantiate(prefab);
-                    animalGo.name = "AnimalModel";
-                    animalGo.transform.SetParent(pinGo.transform, false);
-                }
-            }
-            #endif
+                    GameObject modelGo = Instantiate(prefab);
+                    modelGo.name = "AnimalModel";
+                    modelGo.transform.SetParent(pivotGo.transform, false);
+                    modelGo.transform.localRotation = Quaternion.Euler(modelEulerAngles);
+                    modelGo.transform.localPosition = modelOffset;
 
-            if (animalGo != null)
-            {
-                animalGo.transform.localPosition = Vector3.zero;
-                animalGo.transform.localRotation = Quaternion.identity;
-
-                Renderer[] rends = animalGo.GetComponentsInChildren<Renderer>(true);
-                if (rends.Length > 0)
-                {
-                    // 1. Encontra a dimensão máxima e aplica escala proporcional ampliada
-                    Bounds b = rends[0].bounds;
-                    for (int i = 1; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
-
-                    float maxDim = Mathf.Max(b.size.x, b.size.y, b.size.z);
-                    if (maxDim > 0.001f)
+                    // Mede as dimensões nativas do Mesh (determinístico e independente de rotação de mundo)
+                    Bounds meshBounds = new Bounds(Vector3.zero, Vector3.zero);
+                    bool foundMesh = false;
+                    foreach (var mf in modelGo.GetComponentsInChildren<MeshFilter>(true))
                     {
-                        float scaleFactor = targetSize / maxDim;
-                        animalGo.transform.localScale = Vector3.one * scaleFactor;
+                        if (mf.sharedMesh != null)
+                        {
+                            if (!foundMesh) { meshBounds = mf.sharedMesh.bounds; foundMesh = true; }
+                            else meshBounds.Encapsulate(mf.sharedMesh.bounds);
+                        }
                     }
-                    else
+                    foreach (var smr in modelGo.GetComponentsInChildren<SkinnedMeshRenderer>(true))
                     {
-                        animalGo.transform.localScale = Vector3.one * 0.20f;
+                        if (smr.sharedMesh != null)
+                        {
+                            if (!foundMesh) { meshBounds = smr.sharedMesh.bounds; foundMesh = true; }
+                            else meshBounds.Encapsulate(smr.sharedMesh.bounds);
+                        }
                     }
 
-                    // 2. Recalcula a caixa envolvente com a escala definitiva para medir a altura dos pés
-                    Bounds scaledB = rends[0].bounds;
-                    for (int i = 1; i < rends.Length; i++) scaledB.Encapsulate(rends[i].bounds);
+                    float maxDim = Mathf.Max(meshBounds.size.x, meshBounds.size.y, meshBounds.size.z);
+                    float scaleFactor = (maxDim > 0.0001f) ? (targetSize / maxDim) : 0.30f;
+                    modelGo.transform.localScale = Vector3.one * scaleFactor;
 
-                    // Topo do pedestal fino fica em Y = +0.003f
-                    float pedestalTopLocalY = 0.0035f;
-                    float lowestFootLocalY = pinGo.transform.InverseTransformPoint(scaledB.min).y;
-                    float elevationOffset = pedestalTopLocalY - lowestFootLocalY + 0.002f;
-                    animalGo.transform.localPosition = new Vector3(0, elevationOffset, 0);
-
-                    // 3. Aplica materiais do Universal Render Pipeline (URP Lit) com Textura e Cores Fidedignas
-                    #if UNITY_EDITOR
+                    // Aplica materiais URP Lit com texturas e cores fiéis
                     Shader s = Shader.Find("Universal Render Pipeline/Lit");
                     if (s == null) s = Shader.Find("Standard");
 
@@ -332,8 +346,7 @@ namespace ARLab.Geography
                         ? UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(normalPath) 
                         : null;
 
-                    Color effectiveColor = animalColorOverride ?? color;
-
+                    var rends = modelGo.GetComponentsInChildren<Renderer>(true);
                     foreach (var r in rends)
                     {
                         int matCount = Mathf.Max(1, (r.sharedMaterials != null) ? r.sharedMaterials.Length : 1);
@@ -350,8 +363,8 @@ namespace ARLab.Geography
                             }
                             else
                             {
-                                mat.SetColor("_BaseColor", effectiveColor);
-                                mat.color = effectiveColor;
+                                mat.SetColor("_BaseColor", animalColor);
+                                mat.color = animalColor;
                             }
 
                             if (normalTex != null)
@@ -365,43 +378,17 @@ namespace ARLab.Geography
                         }
                         r.materials = newMats;
                     }
-                    #endif
-                }
-
-                var rotator = animalGo.GetComponent<Animal3DRotator>();
-                if (rotator == null) rotator = animalGo.AddComponent<Animal3DRotator>();
-            }
-            else
-            {
-                // Totem esférico elegante caso o modelo 3D esteja carregando
-                Transform fallbackTr = pinGo.transform.Find("FallbackTotem");
-                if (fallbackTr == null)
-                {
-                    var fallback = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    fallback.name = "FallbackTotem";
-                    fallback.transform.SetParent(pinGo.transform, false);
-                    fallback.transform.localPosition = new Vector3(0, 0.05f, 0);
-                    fallback.transform.localScale = Vector3.one * 0.12f;
-                    var mr = fallback.GetComponent<MeshRenderer>();
-                    if (mr != null)
-                    {
-                        Shader s = Shader.Find("Universal Render Pipeline/Lit");
-                        if (s == null) s = Shader.Find("Standard");
-                        var mat = new Material(s);
-                        mat.color = color;
-                        mat.SetColor("_BaseColor", color);
-                        mr.material = mat;
-                    }
                 }
             }
+            #endif
 
-            // 3. Collider tátil ampliado para a nova escala
+            // 4. Collider tátil ampliado para a nova escala
             var col = pinGo.GetComponent<SphereCollider>();
             if (col == null) col = pinGo.AddComponent<SphereCollider>();
             col.radius = 0.16f;
-            col.center = new Vector3(0, 0.08f, 0);
+            col.center = new Vector3(0, elevationY, 0);
 
-            // 4. Hotspot de dados pedagógicos
+            // 5. Hotspot de dados pedagógicos
             var hotspot = pinGo.GetComponent<ContinentHotspot>();
             if (hotspot == null) hotspot = pinGo.AddComponent<ContinentHotspot>();
             hotspot.continentName = continent;
