@@ -21,7 +21,8 @@ namespace ARLab.Geography
     /// <summary>
     /// Gerenciador Central do AR Lab:
     /// Interface sofisticada em Glassmorphism com pass-through de Câmera RA em tela cheia (100% Full-Bleed),
-    /// Globo Terrestre em proporção perfeita (escala 1.35x), Floating Action Button (FAB) com ícones intuitivos,
+    /// Globo Terrestre em proporção perfeita (escala 1.35x), Botão profissional de alternância de Câmera RA com estados
+    /// visuais explícitos (Ativar/Desativar), Botão interativo lúdico com olhos animados observando,
     /// sistema animado de Toast Notifications, e 7 missões pedagógicas com validação tridimensional.
     /// </summary>
     public class ARLabGameManager : MonoBehaviour
@@ -47,10 +48,16 @@ namespace ARLab.Geography
         public Text infoCardDescriptionText;
         public Text victoryScoreText;
 
-        [Header("Botão Flutuante de Câmera RA (FAB)")]
+        [Header("Botão Profissional de Câmera RA")]
         public Button btnToggleARCamera;
         public Text btnToggleARCameraText;
         public Image btnToggleARCameraImage;
+
+        [Header("Botão Lúdico com Olhos Animados")]
+        public Button btnFoundContinent;
+        public Text btnFoundEyesText;
+        public Text btnFoundLabelText;
+        private Coroutine eyesAnimationCoroutine;
 
         [Header("Toast Notification")]
         private GameObject toastObject;
@@ -116,6 +123,17 @@ namespace ARLab.Geography
             Initialize7Continents();
             LinkHotspots();
             StartDirectExploration();
+            StartEyesAnimation();
+        }
+
+        void Update()
+        {
+            // Animação sutil de respiração (pulsing) no botão de confirmação lúdico
+            if (btnFoundContinent != null && btnFoundContinent.gameObject.activeInHierarchy)
+            {
+                float pulse = 1.0f + 0.025f * Mathf.Sin(Time.time * 3.5f);
+                btnFoundContinent.transform.localScale = new Vector3(pulse, pulse, 1f);
+            }
         }
 
         public void EnsureCameraSettings()
@@ -152,7 +170,7 @@ namespace ARLab.Geography
                 globe.transform.rotation = Quaternion.Euler(0, 180f, 0);
             }
 
-            // Garante proporção harmônica elegante (1.35x) para visualização espaçosa e realista em RA
+            // Proporção harmônica elegante (1.35x) para visualização espaçosa e realista em RA
             globe.transform.position = new Vector3(0, 0.95f, -6f);
             globe.transform.localScale = Vector3.one * 1.35f;
 
@@ -256,14 +274,14 @@ namespace ARLab.Geography
             SetRect(gameplayHUDPanel, 0, 0, 1, 1, 0, 0, 0, 0);
 
             // 1. Top HUD Card (Design Glassmorphic translúcido com cantos arredondados)
-            GameObject topCard = CreatePanel(gameplayHUDPanel, "GlassMissionHUD", new Color(0.04f, 0.09f, 0.18f, 0.68f), GetGlassCardSprite());
-            SetRect(topCard, 0.04f, 0.845f, 0.79f, 0.975f, 0, 0, 0, 0);
+            GameObject topCard = CreatePanel(gameplayHUDPanel, "GlassMissionHUD", new Color(0.04f, 0.09f, 0.18f, 0.70f), GetGlassCardSprite());
+            SetRect(topCard, 0.04f, 0.845f, 0.67f, 0.975f, 0, 0, 0, 0);
 
             // Linha superior: Progresso + Pontos
-            missionProgressText = CreateText(topCard, "MissionProgressText", "🎯 Missão 1 de 7", 26, new Color(0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
+            missionProgressText = CreateText(topCard, "MissionProgressText", "🎯 Missão 1 de 7", 25, new Color(0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
             SetRect(missionProgressText.gameObject, 0.06f, 0.65f, 0.56f, 0.95f, 0, 0, 0, 0);
 
-            scoreText = CreateText(topCard, "ScoreText", "⭐ 0 pts", 26, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleRight, font);
+            scoreText = CreateText(topCard, "ScoreText", "⭐ 0 pts", 25, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleRight, font);
             SetRect(scoreText.gameObject, 0.56f, 0.65f, 0.94f, 0.95f, 0, 0, 0, 0);
 
             // Linha central: Nome do Continente e Animal
@@ -272,21 +290,34 @@ namespace ARLab.Geography
             SetRect(missionTitleText.gameObject, 0.06f, 0.32f, 0.94f, 0.65f, 0, 0, 0, 0);
 
             // Linha inferior: Instrução lúdica amigável
-            missionPromptText = CreateText(topCard, "MissionPromptText", "Gire a Terra para posicionar no centro!", 21, new Color(0.82f, 0.90f, 0.98f), TextAnchor.MiddleLeft, font);
+            missionPromptText = CreateText(topCard, "MissionPromptText", "Gire a Terra para posicionar no centro!", 20, new Color(0.82f, 0.90f, 0.98f), TextAnchor.MiddleLeft, font);
             SetRect(missionPromptText.gameObject, 0.06f, 0.05f, 0.94f, 0.32f, 0, 0, 0, 0);
 
-            // 2. Botão Flutuante Circular (FAB) de Alternância de Câmera RA / Modo Espaço
-            btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "📷", new Color(0.08f, 0.82f, 0.45f, 0.95f), font, GetCircleSprite(), 38);
-            SetRect(btnToggleARCamera.gameObject, 0.82f, 0.865f, 0.96f, 0.965f, 0, 0, 0, 0);
+            // 2. Botão Profissional de Câmera RA com Ícone e Estado Explícito (Ativar / Desativar)
+            btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "📷 ATIVAR RA", new Color(0.06f, 0.55f, 0.45f, 0.92f), font, GetRoundedPillSprite(), 20);
+            SetRect(btnToggleARCamera.gameObject, 0.69f, 0.865f, 0.96f, 0.965f, 0, 0, 0, 0);
             btnToggleARCamera.onClick.AddListener(ToggleARMode);
             btnToggleARCameraText = btnToggleARCamera.GetComponentInChildren<Text>();
+            btnToggleARCameraText.fontStyle = FontStyle.Bold;
             btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
 
-            // 3. Botão Flutuante Inferior (Cápsula Esmeralda Brilhante com cantos suaves)
-            Button btnFound = CreateRoundedButton(gameplayHUDPanel, "BtnFoundContinent", "✨ ESTOU VENDO ESTE CONTINENTE!", new Color(0.06f, 0.82f, 0.45f, 0.95f), font, GetRoundedPillSprite(), 28);
-            btnFound.GetComponentInChildren<Text>().fontStyle = FontStyle.Bold;
-            SetRect(btnFound.gameObject, 0.08f, 0.035f, 0.92f, 0.105f, 0, 0, 0, 0);
-            btnFound.onClick.AddListener(CheckCurrentOrientation);
+            // 3. Botão Flutuante Inferior Lúdico com Olhos Animados e Brilho Aurora Teal
+            btnFoundContinent = CreateRoundedButton(gameplayHUDPanel, "BtnFoundContinent", "", new Color(0.02f, 0.78f, 0.65f, 0.96f), font, GetRoundedPillSprite(), 26);
+            SetRect(btnFoundContinent.gameObject, 0.06f, 0.035f, 0.94f, 0.11f, 0, 0, 0, 0);
+            btnFoundContinent.onClick.AddListener(CheckCurrentOrientation);
+
+            // Remove o texto centrado padrão para acomodar os Olhos Animados + Rótulo Lúdico
+            var defaultBtnText = btnFoundContinent.transform.Find("Text");
+            if (defaultBtnText != null) DestroyImmediate(defaultBtnText.gameObject);
+
+            // Olhos observando animados (lado esquerdo)
+            btnFoundEyesText = CreateText(btnFoundContinent.gameObject, "EyesIcon", "👀", 36, Color.white, TextAnchor.MiddleCenter, font);
+            SetRect(btnFoundEyesText.gameObject, 0.02f, 0.05f, 0.20f, 0.95f, 0, 0, 0, 0);
+
+            // Rótulo de confirmação com visual vibrante (centro-direita)
+            btnFoundLabelText = CreateText(btnFoundContinent.gameObject, "MainLabel", "ESTOU VENDO ESTE CONTINENTE!", 25, Color.white, TextAnchor.MiddleLeft, font);
+            btnFoundLabelText.fontStyle = FontStyle.Bold;
+            SetRect(btnFoundLabelText.gameObject, 0.20f, 0.05f, 0.98f, 0.95f, 0, 0, 0, 0);
 
             // 4. Toast Notification Flutuante
             EnsureToastUI(canvasGo, font);
@@ -335,6 +366,55 @@ namespace ARLab.Geography
             // Atualiza o estado inicial do botão da câmera RA
             bool isARCurrentlyActive = (arCameraBackground != null && arCameraBackground.IsARActive);
             UpdateARButtonUI(isARCurrentlyActive);
+
+            StartEyesAnimation();
+        }
+
+        private void StartEyesAnimation()
+        {
+            if (eyesAnimationCoroutine != null) StopCoroutine(eyesAnimationCoroutine);
+            eyesAnimationCoroutine = StartCoroutine(EyesAnimationRoutine());
+        }
+
+        private IEnumerator EyesAnimationRoutine()
+        {
+            // Ciclo lúdico de olhos observando, piscando e procurando continentes
+            string[] eyeFrames = new string[]
+            {
+                "👀",      // Olhos atentos olhando a Terra
+                "👀",      // Observando
+                "😌",      // Piscadela rápida e amigável
+                "👀",      // Reabertos
+                "🔎👀",    // Procurando à esquerda
+                "👀🔍",    // Procurando à direita
+                "✨👀✨",  // Olhos brilhando curiosos
+                "🤩"       // Encantado com a descoberta
+            };
+
+            float[] durations = new float[]
+            {
+                1.5f,
+                1.2f,
+                0.18f,
+                1.0f,
+                1.3f,
+                1.3f,
+                1.5f,
+                1.2f
+            };
+
+            int index = 0;
+            while (true)
+            {
+                if (btnFoundEyesText != null)
+                {
+                    btnFoundEyesText.text = eyeFrames[index];
+                }
+
+                yield return new WaitForSeconds(durations[index]);
+
+                index = (index + 1) % eyeFrames.Length;
+            }
         }
 
         private void EnsureToastUI(GameObject canvasGo, Font font)
@@ -520,7 +600,7 @@ namespace ARLab.Geography
         }
 
         /// <summary>
-        /// Acionado pelo botão flutuante 'ESTOU VENDO ESTE CONTINENTE!'
+        /// Acionado pelo botão lúdico 'ESTOU VENDO ESTE CONTINENTE!'
         /// </summary>
         public void CheckCurrentOrientation()
         {
@@ -531,10 +611,12 @@ namespace ARLab.Geography
 
             if (isFacing)
             {
+                if (btnFoundEyesText != null) btnFoundEyesText.text = "🎉🤩🎉";
                 StartCoroutine(ProcessSuccessRoutine(mission));
             }
             else
             {
+                if (btnFoundEyesText != null) btnFoundEyesText.text = "👀❓";
                 StartCoroutine(ProcessFailAndCorrectRoutine(mission));
             }
         }
@@ -550,6 +632,7 @@ namespace ARLab.Geography
 
             if (clickedHotspot.continentName.Trim().Equals(currentMission.continentName.Trim(), StringComparison.OrdinalIgnoreCase))
             {
+                if (btnFoundEyesText != null) btnFoundEyesText.text = "🎉🤩🎉";
                 StartCoroutine(ProcessSuccessRoutine(currentMission));
             }
             else
@@ -699,13 +782,13 @@ namespace ARLab.Geography
         {
             if (btnToggleARCameraText != null)
             {
-                btnToggleARCameraText.text = isARActive ? "📷" : "🪐";
+                btnToggleARCameraText.text = isARActive ? "✕ DESATIVAR RA" : "📷 ATIVAR RA";
             }
             if (btnToggleARCameraImage != null)
             {
                 btnToggleARCameraImage.color = isARActive 
-                    ? new Color(0.08f, 0.82f, 0.45f, 0.95f) 
-                    : new Color(0.14f, 0.22f, 0.42f, 0.88f);
+                    ? new Color(0.78f, 0.18f, 0.28f, 0.92f) 
+                    : new Color(0.06f, 0.55f, 0.45f, 0.92f);
             }
         }
 
