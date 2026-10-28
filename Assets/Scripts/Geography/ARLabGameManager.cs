@@ -221,7 +221,7 @@ namespace ARLab.Geography
             EnsurePin(globe, "Pin_Oceania", "Oceania", "🐢", "Tartaruga Marinha", "Austrália e ilhas cercadas pela Grande Barreira de Corais!", 
                 new Vector3(-0.328f, -0.255f, 0.328f), new Color(0.15f, 0.9f, 0.35f), 
                 "Assets/Models/Animals/Turtle/Turtle.fbx", "Assets/Models/Animals/Turtle/Turtle.png", null, 
-                0.210f, 0.030f, Vector3.zero, Vector3.zero, new Color(0.18f, 0.72f, 0.38f));
+                0.185f, 0.030f, Vector3.zero, Vector3.zero, new Color(0.18f, 0.72f, 0.38f));
 
             // 6. América do Norte: Urso Pardo (escala 0.071 = 0.180m visual, proporção idêntica aos demais)
             EnsurePin(globe, "Pin_AmericaDoNorte", "América do Norte", "🐻", "Urso Pardo", "Florestas de pinheiros, grandes montanhas rochosas e o Urso Pardo!", 
@@ -341,6 +341,13 @@ namespace ARLab.Geography
 
                     // Se a malha geométrica for detectada, unifica com base na dimensão máxima alvo de 0.18m, senão usa o targetSize calibrado
                     float unifiedScale = (detectedMaxDim > 0.005f) ? (0.18f / detectedMaxDim) : targetSize;
+
+                    // Ajuste exclusivo da Tartaruga Marinha (cujo FBX possui escala interna de 100x nos nós filhos)
+                    if (goName == "Pin_Oceania" || (!string.IsNullOrEmpty(modelPath) && modelPath.Contains("Turtle")))
+                    {
+                        unifiedScale = 0.185f;
+                    }
+
                     modelGo.transform.localScale = Vector3.one * unifiedScale;
 
                     // Aplica materiais URP Lit com texturas e cores fiéis
