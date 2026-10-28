@@ -495,7 +495,7 @@ namespace ARLab.Geography
             UpdateScoreDisplay();
             StartCurrentMission();
 
-            TelemetryLogger.Instance?.RegisterSessionStart("Mobile_Touch_Direct");
+            TelemetryLogger.Instance?.RegisterSessionStart();
         }
 
         private void StartCurrentMission()

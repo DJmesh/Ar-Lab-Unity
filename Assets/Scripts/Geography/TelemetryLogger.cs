@@ -47,7 +47,7 @@ namespace ARLab.Geography
             filePath = Path.Combine(Application.persistentDataPath, "ar_globo_telemetry.json");
         }
 
-        public void RegisterSessionStart()
+        public void RegisterSessionStart(string interactionMode = null)
         {
             currentSession = new TelemetrySessionData
             {
