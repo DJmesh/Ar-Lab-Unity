@@ -193,47 +193,47 @@ namespace ARLab.Geography
             }
 
             // 7 Continentes com Modelos 3D Reais de Animais com Escalas Fidedignas e Elevações Precisas
-            // 1. América do Sul: Onça-Pintada
+            // 1. América do Sul: Onça-Pintada (tamanho original grande e vistoso)
             EnsurePin(globe, "Pin_AmericaDoSul", "América do Sul", "🐆", "Onça-Pintada", "Floresta Amazônica e o Brasil!", 
                 new Vector3(0.293f, -0.096f, -0.431f), new Color(1f, 0.85f, 0.1f), 
                 "Assets/Models/Animals/Tiger/Tiger.fbx", "Assets/Models/Animals/Tiger/texture.png", "Assets/Models/Animals/Tiger/NormalMap.png", 
-                0.065f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.96f, 0.68f, 0.12f));
+                0.34f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.96f, 0.68f, 0.12f));
 
-            // 2. África: Elefante Africano (afastado da base para as 4 patas ficarem 100% visíveis)
+            // 2. África: Elefante Africano (tamanho original grande, pés 100% visíveis fora da base)
             EnsurePin(globe, "Pin_Africa", "África", "🐘", "Elefante", "Grandes savanas africanas com elefantes, zebras e girafas!", 
                 new Vector3(0.490f, 0.000f, 0.203f), new Color(1f, 0.48f, 0.08f), 
                 "Assets/Models/Animals/Elephant/Elephant.fbx", "Assets/Models/Animals/Elephant/Elephant.png", null, 
-                0.032f, 0.048f, Vector3.zero, Vector3.zero, new Color(0.48f, 0.50f, 0.53f));
+                0.34f, 0.048f, Vector3.zero, Vector3.zero, new Color(0.48f, 0.50f, 0.53f));
 
-            // 3. Europa: Raposa (em pé, patas no chão)
+            // 3. Europa: Raposa (tamanho original grande, em pé)
             EnsurePin(globe, "Pin_Europa", "Europa", "🦊", "Raposa", "Ao norte da África, com florestas temperadas e belos castelos!", 
                 new Vector3(0.293f, 0.431f, 0.096f), new Color(0.18f, 0.55f, 1f), 
                 "Assets/Models/Animals/Fox/Fox.obj", "Assets/Models/Animals/Fox/Fox.png", null, 
-                0.22f, 0.022f, new Vector3(-90f, 0f, 0f), Vector3.zero, new Color(0.92f, 0.42f, 0.08f));
+                0.28f, 0.025f, new Vector3(-90f, 0f, 0f), Vector3.zero, new Color(0.92f, 0.42f, 0.08f));
 
-            // 4. Ásia: Urso Panda (tamanho proporcional balanceado sobre o pedestal rosa, sem bugar)
+            // 4. Ásia: Urso Panda (proporcional, nem gigante nem minúsculo, perfeitamente assentado)
             EnsurePin(globe, "Pin_Asia", "Ásia", "🐼", "Urso Panda", "O maior continente da Terra, lar das florestas de bambu e do Panda!", 
                 new Vector3(0.000f, 0.297f, 0.439f), new Color(0.95f, 0.2f, 0.35f), 
                 "Assets/Models/Animals/Panda/Panda.fbx", "Assets/Models/Animals/Panda/Panda.png", null, 
-                0.038f, 0.025f, Vector3.zero, Vector3.zero, new Color(0.92f, 0.92f, 0.92f));
+                0.18f, 0.035f, Vector3.zero, Vector3.zero, new Color(0.92f, 0.92f, 0.92f));
 
-            // 5. Oceania: Tartaruga Marinha (tamanho correto proporcional, só um pouco afastada da base)
+            // 5. Oceania: Tartaruga Marinha (proporcional, nem gigante cobrindo a Terra nem minúscula, só um pouco afastada da base)
             EnsurePin(globe, "Pin_Oceania", "Oceania", "🐢", "Tartaruga Marinha", "Austrália e ilhas cercadas pela Grande Barreira de Corais!", 
                 new Vector3(-0.328f, -0.255f, 0.328f), new Color(0.15f, 0.9f, 0.35f), 
                 "Assets/Models/Animals/Turtle/Turtle.fbx", "Assets/Models/Animals/Turtle/Turtle.png", null, 
-                0.045f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.18f, 0.72f, 0.38f));
+                0.16f, 0.025f, Vector3.zero, Vector3.zero, new Color(0.18f, 0.72f, 0.38f));
 
-            // 6. América do Norte: Urso Pardo (nivelado perfeitamente no pedestal)
+            // 6. América do Norte: Urso Pardo (tamanho original grande e vistoso)
             EnsurePin(globe, "Pin_AmericaDoNorte", "América do Norte", "🐻", "Urso Pardo", "Florestas de pinheiros, grandes montanhas rochosas e o Urso Pardo!", 
                 new Vector3(-0.094f, 0.368f, -0.369f), new Color(0.7f, 0.25f, 0.95f), 
                 "Assets/Models/Animals/Bear/Bear.fbx", "Assets/Models/Animals/Bear/Bear.png", null, 
-                0.060f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.45f, 0.28f, 0.15f));
+                0.34f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.45f, 0.28f, 0.15f));
 
-            // 7. Antártida: Pinguim Imperial (ereto e destacado sobre o pedestal de gelo)
+            // 7. Antártida: Pinguim Imperial (tamanho original grande, em pé sobre o gelo)
             EnsurePin(globe, "Pin_Antartida", "Antártida", "🐧", "Pinguim", "O polo sul congelado coberto de gelo e colônias de pinguins!", 
                 new Vector3(0.107f, -0.519f, 0.000f), new Color(0.85f, 0.95f, 1f), 
                 "Assets/Models/Animals/Penguin/Penguin.fbx", "Assets/Models/Animals/Penguin/Penguin(Skin).png", null, 
-                0.025f, 0.032f, Vector3.zero, Vector3.zero, new Color(0.12f, 0.14f, 0.18f));
+                0.32f, 0.040f, Vector3.zero, Vector3.zero, new Color(0.12f, 0.14f, 0.18f));
         }
 
         private void EnsurePin(GameObject globe, string goName, string continent, string icon, string animal, string fact, 
