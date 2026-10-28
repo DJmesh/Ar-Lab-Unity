@@ -86,6 +86,7 @@ namespace ARLab.Geography
         private static Sprite _roundedPillSprite;
         private static Sprite _circleSprite;
         private static Sprite _glassCardSprite;
+        private static Sprite _cameraIconSprite;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void AutoBootstrap()
@@ -192,47 +193,47 @@ namespace ARLab.Geography
             }
 
             // 7 Continentes com Modelos 3D Reais de Animais com Escalas Fidedignas e Elevações Precisas
-            // 1. América do Sul: Onça-Pintada (proporção balanceada no pedestal)
+            // 1. América do Sul: Onça-Pintada
             EnsurePin(globe, "Pin_AmericaDoSul", "América do Sul", "🐆", "Onça-Pintada", "Floresta Amazônica e o Brasil!", 
                 new Vector3(0.293f, -0.096f, -0.431f), new Color(1f, 0.85f, 0.1f), 
                 "Assets/Models/Animals/Tiger/Tiger.fbx", "Assets/Models/Animals/Tiger/texture.png", "Assets/Models/Animals/Tiger/NormalMap.png", 
-                0.075f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.96f, 0.68f, 0.12f));
+                0.065f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.96f, 0.68f, 0.12f));
 
-            // 2. África: Elefante Africano (afastado da base para que as patas fiquem 100% visíveis)
+            // 2. África: Elefante Africano (afastado da base para as 4 patas ficarem 100% visíveis)
             EnsurePin(globe, "Pin_Africa", "África", "🐘", "Elefante", "Grandes savanas africanas com elefantes, zebras e girafas!", 
                 new Vector3(0.490f, 0.000f, 0.203f), new Color(1f, 0.48f, 0.08f), 
                 "Assets/Models/Animals/Elephant/Elephant.fbx", "Assets/Models/Animals/Elephant/Elephant.png", null, 
-                0.035f, 0.048f, Vector3.zero, Vector3.zero, new Color(0.48f, 0.50f, 0.53f));
+                0.032f, 0.048f, Vector3.zero, Vector3.zero, new Color(0.48f, 0.50f, 0.53f));
 
             // 3. Europa: Raposa (em pé, patas no chão)
             EnsurePin(globe, "Pin_Europa", "Europa", "🦊", "Raposa", "Ao norte da África, com florestas temperadas e belos castelos!", 
                 new Vector3(0.293f, 0.431f, 0.096f), new Color(0.18f, 0.55f, 1f), 
                 "Assets/Models/Animals/Fox/Fox.obj", "Assets/Models/Animals/Fox/Fox.png", null, 
-                0.28f, 0.025f, new Vector3(-90f, 0f, 0f), Vector3.zero, new Color(0.92f, 0.42f, 0.08f));
+                0.22f, 0.022f, new Vector3(-90f, 0f, 0f), Vector3.zero, new Color(0.92f, 0.42f, 0.08f));
 
-            // 4. Ásia: Urso Panda (tamanho proporcional e perfeito no pedestal rosa, sem bugar)
+            // 4. Ásia: Urso Panda (tamanho proporcional balanceado sobre o pedestal rosa, sem bugar)
             EnsurePin(globe, "Pin_Asia", "Ásia", "🐼", "Urso Panda", "O maior continente da Terra, lar das florestas de bambu e do Panda!", 
                 new Vector3(0.000f, 0.297f, 0.439f), new Color(0.95f, 0.2f, 0.35f), 
                 "Assets/Models/Animals/Panda/Panda.fbx", "Assets/Models/Animals/Panda/Panda.png", null, 
-                0.045f, 0.028f, Vector3.zero, Vector3.zero, new Color(0.92f, 0.92f, 0.92f));
+                0.038f, 0.025f, Vector3.zero, Vector3.zero, new Color(0.92f, 0.92f, 0.92f));
 
-            // 5. Oceania: Tartaruga Marinha (tamanho balanceado e só um pouco afastada da base verde)
+            // 5. Oceania: Tartaruga Marinha (tamanho correto proporcional, só um pouco afastada da base)
             EnsurePin(globe, "Pin_Oceania", "Oceania", "🐢", "Tartaruga Marinha", "Austrália e ilhas cercadas pela Grande Barreira de Corais!", 
                 new Vector3(-0.328f, -0.255f, 0.328f), new Color(0.15f, 0.9f, 0.35f), 
                 "Assets/Models/Animals/Turtle/Turtle.fbx", "Assets/Models/Animals/Turtle/Turtle.png", null, 
-                0.065f, 0.025f, Vector3.zero, Vector3.zero, new Color(0.18f, 0.72f, 0.38f));
+                0.045f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.18f, 0.72f, 0.38f));
 
             // 6. América do Norte: Urso Pardo (nivelado perfeitamente no pedestal)
             EnsurePin(globe, "Pin_AmericaDoNorte", "América do Norte", "🐻", "Urso Pardo", "Florestas de pinheiros, grandes montanhas rochosas e o Urso Pardo!", 
                 new Vector3(-0.094f, 0.368f, -0.369f), new Color(0.7f, 0.25f, 0.95f), 
                 "Assets/Models/Animals/Bear/Bear.fbx", "Assets/Models/Animals/Bear/Bear.png", null, 
-                0.070f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.45f, 0.28f, 0.15f));
+                0.060f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.45f, 0.28f, 0.15f));
 
             // 7. Antártida: Pinguim Imperial (ereto e destacado sobre o pedestal de gelo)
             EnsurePin(globe, "Pin_Antartida", "Antártida", "🐧", "Pinguim", "O polo sul congelado coberto de gelo e colônias de pinguins!", 
                 new Vector3(0.107f, -0.519f, 0.000f), new Color(0.85f, 0.95f, 1f), 
                 "Assets/Models/Animals/Penguin/Penguin.fbx", "Assets/Models/Animals/Penguin/Penguin(Skin).png", null, 
-                0.030f, 0.035f, Vector3.zero, Vector3.zero, new Color(0.12f, 0.14f, 0.18f));
+                0.025f, 0.032f, Vector3.zero, Vector3.zero, new Color(0.12f, 0.14f, 0.18f));
         }
 
         private void EnsurePin(GameObject globe, string goName, string continent, string icon, string animal, string fact, 
@@ -315,29 +316,8 @@ namespace ARLab.Geography
                     modelGo.transform.localRotation = Quaternion.Euler(modelEulerAngles);
                     modelGo.transform.localPosition = modelOffset;
 
-                    // Mede as dimensões nativas do Mesh (determinístico e independente de rotação de mundo)
-                    Bounds meshBounds = new Bounds(Vector3.zero, Vector3.zero);
-                    bool foundMesh = false;
-                    foreach (var mf in modelGo.GetComponentsInChildren<MeshFilter>(true))
-                    {
-                        if (mf.sharedMesh != null)
-                        {
-                            if (!foundMesh) { meshBounds = mf.sharedMesh.bounds; foundMesh = true; }
-                            else meshBounds.Encapsulate(mf.sharedMesh.bounds);
-                        }
-                    }
-                    foreach (var smr in modelGo.GetComponentsInChildren<SkinnedMeshRenderer>(true))
-                    {
-                        if (smr.sharedMesh != null)
-                        {
-                            if (!foundMesh) { meshBounds = smr.sharedMesh.bounds; foundMesh = true; }
-                            else meshBounds.Encapsulate(smr.sharedMesh.bounds);
-                        }
-                    }
-
-                    float maxDim = Mathf.Max(meshBounds.size.x, meshBounds.size.y, meshBounds.size.z);
-                    float scaleFactor = (maxDim > 0.0001f) ? (targetSize / maxDim) : 0.30f;
-                    modelGo.transform.localScale = Vector3.one * scaleFactor;
+                    // Aplica a escala explícita calibrada com precisão para este animal
+                    modelGo.transform.localScale = Vector3.one * targetSize;
 
                     // Aplica materiais URP Lit com texturas e cores fiéis
                     Shader s = Shader.Find("Universal Render Pipeline/Lit");
@@ -449,72 +429,78 @@ namespace ARLab.Geography
             gameplayHUDPanel = CreatePanel(canvasGo, "GameplayHUD", Color.clear);
             SetRect(gameplayHUDPanel, 0, 0, 1, 1, 0, 0, 0, 0);
 
-            // 1. Top HUD Card (Design Glassmorphic translúcido harmonioso)
-            GameObject topCard = CreatePanel(gameplayHUDPanel, "GlassMissionHUD", new Color(0.04f, 0.09f, 0.18f, 0.75f), GetGlassCardSprite());
-            SetRect(topCard, 0.04f, 0.855f, 0.70f, 0.975f, 0, 0, 0, 0);
+            // 1. Top HUD Card (Design Glassmorphic translúcido harmonioso no topo esquerdo)
+            GameObject topCard = CreatePanel(gameplayHUDPanel, "GlassMissionHUD", new Color(0.04f, 0.09f, 0.18f, 0.78f), GetGlassCardSprite());
+            var topCardRt = topCard.GetComponent<RectTransform>();
+            topCardRt.anchorMin = new Vector2(0f, 1f);
+            topCardRt.anchorMax = new Vector2(1f, 1f);
+            topCardRt.pivot = new Vector2(0f, 1f);
+            topCardRt.offsetMin = new Vector2(24f, -145f);
+            topCardRt.offsetMax = new Vector2(-270f, -24f);
 
             // Linha superior: Progresso + Pontos
-            missionProgressText = CreateText(topCard, "MissionProgressText", "🎯 Missão 1 de 7", 23, new Color(0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
-            SetRect(missionProgressText.gameObject, 0.06f, 0.65f, 0.56f, 0.95f, 0, 0, 0, 0);
+            missionProgressText = CreateText(topCard, "MissionProgressText", "🎯 Missão 1 de 7", 22, new Color(0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
+            SetRect(missionProgressText.gameObject, 0.05f, 0.65f, 0.58f, 0.95f, 0, 0, 0, 0);
 
-            scoreText = CreateText(topCard, "ScoreText", "⭐ 0 pts", 23, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleRight, font);
-            SetRect(scoreText.gameObject, 0.56f, 0.65f, 0.94f, 0.95f, 0, 0, 0, 0);
+            scoreText = CreateText(topCard, "ScoreText", "⭐ 0 pts", 22, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleRight, font);
+            SetRect(scoreText.gameObject, 0.58f, 0.65f, 0.95f, 0.95f, 0, 0, 0, 0);
 
             // Linha central: Nome do Continente e Animal
-            missionTitleText = CreateText(topCard, "MissionTitleText", "🐆 América do Sul", 29, Color.white, TextAnchor.MiddleLeft, font);
+            missionTitleText = CreateText(topCard, "MissionTitleText", "🐆 América do Sul", 28, Color.white, TextAnchor.MiddleLeft, font);
             missionTitleText.fontStyle = FontStyle.Bold;
-            SetRect(missionTitleText.gameObject, 0.06f, 0.32f, 0.94f, 0.65f, 0, 0, 0, 0);
+            SetRect(missionTitleText.gameObject, 0.05f, 0.32f, 0.95f, 0.65f, 0, 0, 0, 0);
 
             // Linha inferior: Instrução amigável
-            missionPromptText = CreateText(topCard, "MissionPromptText", "Gire a Terra para posicionar no centro!", 18, new Color(0.82f, 0.90f, 0.98f), TextAnchor.MiddleLeft, font);
-            SetRect(missionPromptText.gameObject, 0.06f, 0.05f, 0.94f, 0.32f, 0, 0, 0, 0);
+            missionPromptText = CreateText(topCard, "MissionPromptText", "Gire a Terra para posicionar no centro!", 17, new Color(0.82f, 0.90f, 0.98f), TextAnchor.MiddleLeft, font);
+            SetRect(missionPromptText.gameObject, 0.05f, 0.05f, 0.95f, 0.32f, 0, 0, 0, 0);
 
-            // 2. Botão de Câmera RA Moderno, Compacto e Harmonioso no Topo Direito
-            btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetRoundedPillSprite(), 18);
-            SetRect(btnToggleARCamera.gameObject, 0.72f, 0.855f, 0.96f, 0.975f, 0, 0, 0, 0);
+            // 2. Botão de Câmera RA Refinado e Elegante no Topo Direito (Cápsula Horizontal)
+            btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "", new Color(0.04f, 0.14f, 0.26f, 0.94f), font, GetRoundedPillSprite(), 18);
+            var camBtnRt = btnToggleARCamera.GetComponent<RectTransform>();
+            camBtnRt.anchorMin = new Vector2(1f, 1f);
+            camBtnRt.anchorMax = new Vector2(1f, 1f);
+            camBtnRt.pivot = new Vector2(1f, 1f);
+            camBtnRt.anchoredPosition = new Vector2(-24f, -24f);
+            camBtnRt.sizeDelta = new Vector2(230f, 120f);
             btnToggleARCamera.onClick.AddListener(ToggleARMode);
             btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
 
             var defaultToggleText = btnToggleARCamera.transform.Find("Text");
             if (defaultToggleText != null) DestroyImmediate(defaultToggleText.gameObject);
 
-            // Ícone Horizontal Proporcional de Câmera
-            var camIconContainer = new GameObject("CamIconContainer");
-            camIconContainer.transform.SetParent(btnToggleARCamera.transform, false);
-            SetRect(camIconContainer, 0.06f, 0.18f, 0.36f, 0.82f, 0, 0, 0, 0);
+            // Ícone Vetorial Nítido de Câmera Fotográfica
+            var camIconGo = CreatePanel(btnToggleARCamera.gameObject, "CamIcon", Color.white, GetCameraIconSprite());
+            var camIconRt = camIconGo.GetComponent<RectTransform>();
+            camIconRt.anchorMin = new Vector2(0f, 0.5f);
+            camIconRt.anchorMax = new Vector2(0f, 0.5f);
+            camIconRt.pivot = new Vector2(0f, 0.5f);
+            camIconRt.anchoredPosition = new Vector2(18f, 0f);
+            camIconRt.sizeDelta = new Vector2(46f, 35f);
 
-            var camBody = CreatePanel(camIconContainer, "CamBody", Color.white, GetRoundedPillSprite());
-            SetRect(camBody, 0.05f, 0.12f, 0.95f, 0.88f, 0, 0, 0, 0);
-
-            var camLens = CreatePanel(camBody, "CamLens", new Color(0.05f, 0.15f, 0.28f, 1f), GetCircleSprite());
-            SetRect(camLens, 0.28f, 0.18f, 0.72f, 0.82f, 0, 0, 0, 0);
-
-            var camGlint = CreatePanel(camLens, "CamGlint", Color.white, GetCircleSprite());
-            SetRect(camGlint, 0.55f, 0.55f, 0.80f, 0.80f, 0, 0, 0, 0);
-
-            btnToggleARCameraTitleText = CreateText(btnToggleARCamera.gameObject, "CamTitle", "CÂMERA RA", 14, new Color(0.0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
+            // Textos Diagramados com Clareza e Sofisticação
+            btnToggleARCameraTitleText = CreateText(btnToggleARCamera.gameObject, "CamTitle", "CÂMERA RA", 15, new Color(0.0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
             btnToggleARCameraTitleText.fontStyle = FontStyle.Bold;
-            SetRect(btnToggleARCameraTitleText.gameObject, 0.38f, 0.50f, 0.96f, 0.92f, 0, 0, 0, 0);
+            SetRect(btnToggleARCameraTitleText.gameObject, 0.34f, 0.52f, 0.96f, 0.88f, 0, 0, 0, 0);
 
             btnToggleARCameraStatusText = CreateText(btnToggleARCamera.gameObject, "CamStatus", "● ATIVAR", 18, new Color(0.2f, 1f, 0.45f), TextAnchor.MiddleLeft, font);
             btnToggleARCameraStatusText.fontStyle = FontStyle.Bold;
-            SetRect(btnToggleARCameraStatusText.gameObject, 0.38f, 0.08f, 0.96f, 0.50f, 0, 0, 0, 0);
+            SetRect(btnToggleARCameraStatusText.gameObject, 0.34f, 0.12f, 0.96f, 0.52f, 0, 0, 0, 0);
 
             // 2.1 Botões Flutuantes de Zoom do Globo (+ e -)
-            btnZoomIn = CreateRoundedButton(gameplayHUDPanel, "BtnZoomIn", "+", new Color(0.04f, 0.12f, 0.24f, 0.90f), font, GetCircleSprite(), 32);
+            btnZoomIn = CreateRoundedButton(gameplayHUDPanel, "BtnZoomIn", "+", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetCircleSprite(), 32);
             SetRect(btnZoomIn.gameObject, 0.86f, 0.54f, 0.96f, 0.60f, 0, 0, 0, 0);
             btnZoomIn.onClick.AddListener(OnZoomInClicked);
             btnZoomIn.GetComponentInChildren<Text>().fontStyle = FontStyle.Bold;
             var zoomInShadow = btnZoomIn.gameObject.AddComponent<Shadow>();
-            zoomInShadow.effectColor = new Color(0, 0, 0, 0.4f);
+            zoomInShadow.effectColor = new Color(0, 0, 0, 0.45f);
             zoomInShadow.effectDistance = new Vector2(0, -3);
 
-            btnZoomOut = CreateRoundedButton(gameplayHUDPanel, "BtnZoomOut", "−", new Color(0.04f, 0.12f, 0.24f, 0.90f), font, GetCircleSprite(), 32);
+            btnZoomOut = CreateRoundedButton(gameplayHUDPanel, "BtnZoomOut", "−", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetCircleSprite(), 32);
             SetRect(btnZoomOut.gameObject, 0.86f, 0.46f, 0.96f, 0.52f, 0, 0, 0, 0);
             btnZoomOut.onClick.AddListener(OnZoomOutClicked);
             btnZoomOut.GetComponentInChildren<Text>().fontStyle = FontStyle.Bold;
             var zoomOutShadow = btnZoomOut.gameObject.AddComponent<Shadow>();
-            zoomOutShadow.effectColor = new Color(0, 0, 0, 0.4f);
+            zoomOutShadow.effectColor = new Color(0, 0, 0, 0.45f);
             zoomOutShadow.effectDistance = new Vector2(0, -3);
 
             // 3. Botão Flutuante Inferior Lúdico com Widget de Olhos Animados Procedurais e Brilho Aurora Teal
@@ -1112,6 +1098,70 @@ namespace ARLab.Geography
         }
 
         // --- SISTEMA PROCEDURAL DE SPRITES ARREDONDADOS E GLASSMORPHISM ---
+
+        public static Sprite GetCameraIconSprite()
+        {
+            if (_cameraIconSprite == null)
+            {
+                int w = 64, h = 48;
+                var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Bilinear;
+                Color32[] cols = new Color32[w * h];
+                for (int i = 0; i < cols.Length; i++) cols[i] = new Color32(0, 0, 0, 0);
+
+                // Corpo retangular da câmera com cantos suaves
+                for (int y = 6; y <= 36; y++)
+                {
+                    for (int x = 8; x <= 56; x++)
+                    {
+                        float r = 5f;
+                        float dx = (x < 8 + r) ? (8 + r - x) : (x > 56 - r ? x - (56 - r) : 0);
+                        float dy = (y < 6 + r) ? (6 + r - y) : (y > 36 - r ? y - (36 - r) : 0);
+                        if (dx * dx + dy * dy <= r * r)
+                        {
+                            cols[y * w + x] = new Color32(255, 255, 255, 255);
+                        }
+                    }
+                }
+                // Visor e disparador no topo
+                for (int y = 36; y <= 42; y++)
+                {
+                    for (int x = 20; x <= 34; x++)
+                    {
+                        cols[y * w + x] = new Color32(255, 255, 255, 255);
+                    }
+                }
+                // Lente circular escura no centro
+                for (int y = 10; y <= 32; y++)
+                {
+                    for (int x = 21; x <= 43; x++)
+                    {
+                        float dist = Mathf.Sqrt((x - 32) * (x - 32) + (y - 21) * (y - 21));
+                        if (dist <= 10.5f)
+                        {
+                            cols[y * w + x] = new Color32(10, 24, 42, 255);
+                        }
+                    }
+                }
+                // Reflexo de luz ciano na lente
+                for (int y = 22; y <= 26; y++)
+                {
+                    for (int x = 33; x <= 37; x++)
+                    {
+                        float dist = Mathf.Sqrt((x - 35) * (x - 35) + (y - 24) * (y - 24));
+                        if (dist <= 2.8f)
+                        {
+                            cols[y * w + x] = new Color32(0, 229, 255, 255);
+                        }
+                    }
+                }
+
+                tex.SetPixels32(cols);
+                tex.Apply();
+                _cameraIconSprite = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f);
+            }
+            return _cameraIconSprite;
+        }
 
         public static Sprite GetRoundedPillSprite()
         {
