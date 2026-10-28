@@ -97,7 +97,7 @@ namespace ARLab.Geography
                     Vector2 delta = t0.delta.ReadValue();
                     if (delta.sqrMagnitude > 0.01f)
                     {
-                        angularVelocity = new Vector2(-delta.y, -delta.x) * (rotationSpeed * 0.4f);
+                        angularVelocity = new Vector2(delta.y, -delta.x) * (rotationSpeed * 0.4f);
                     }
                 }
             }
@@ -138,7 +138,7 @@ namespace ARLab.Geography
                     Vector2 delta = touch.deltaPosition;
                     if (delta.sqrMagnitude > 0.01f)
                     {
-                        angularVelocity = new Vector2(-delta.y, -delta.x) * (rotationSpeed * 0.4f);
+                        angularVelocity = new Vector2(delta.y, -delta.x) * (rotationSpeed * 0.4f);
                     }
                 }
             }
@@ -156,7 +156,7 @@ namespace ARLab.Geography
                     Vector2 delta = mouse.delta.ReadValue();
                     if (delta.sqrMagnitude > 0.01f)
                     {
-                        angularVelocity = new Vector2(-delta.y, -delta.x) * (rotationSpeed * 0.4f);
+                        angularVelocity = new Vector2(delta.y, -delta.x) * (rotationSpeed * 0.4f);
                     }
                 }
                 else if (mouse.leftButton.wasReleasedThisFrame)

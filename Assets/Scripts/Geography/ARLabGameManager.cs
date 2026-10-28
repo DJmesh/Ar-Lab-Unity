@@ -192,48 +192,48 @@ namespace ARLab.Geography
                 globeController = globe.AddComponent<GlobeController>();
             }
 
-            // 7 Continentes com Modelos 3D Reais de Animais com Escalas Fidedignas e Elevações Precisas
-            // 1. América do Sul: Onça-Pintada (tamanho original grande e vistoso)
+            // 7 Continentes com Normalização Universal de Escala: TODOS com dimensão visual de ~0.18m
+            // 1. América do Sul: Onça-Pintada (escala 0.108 = 0.181m visual)
             EnsurePin(globe, "Pin_AmericaDoSul", "América do Sul", "🐆", "Onça-Pintada", "Floresta Amazônica e o Brasil!", 
                 new Vector3(0.293f, -0.096f, -0.431f), new Color(1f, 0.85f, 0.1f), 
                 "Assets/Models/Animals/Tiger/Tiger.fbx", "Assets/Models/Animals/Tiger/texture.png", "Assets/Models/Animals/Tiger/NormalMap.png", 
-                0.34f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.96f, 0.68f, 0.12f));
+                0.108f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.96f, 0.68f, 0.12f));
 
-            // 2. África: Elefante Africano (tamanho original grande, pés 100% visíveis fora da base)
+            // 2. África: Elefante Africano (escala 1.080 = 0.182m visual, patas visíveis sobre a base)
             EnsurePin(globe, "Pin_Africa", "África", "🐘", "Elefante", "Grandes savanas africanas com elefantes, zebras e girafas!", 
                 new Vector3(0.490f, 0.000f, 0.203f), new Color(1f, 0.48f, 0.08f), 
                 "Assets/Models/Animals/Elephant/Elephant.fbx", "Assets/Models/Animals/Elephant/Elephant.png", null, 
-                0.34f, 0.048f, Vector3.zero, Vector3.zero, new Color(0.48f, 0.50f, 0.53f));
+                1.080f, 0.052f, Vector3.zero, Vector3.zero, new Color(0.48f, 0.50f, 0.53f));
 
-            // 3. Europa: Raposa (tamanho original grande, em pé)
+            // 3. Europa: Raposa (escala 3.040 = 0.180m visual, em pé ereta sobre as patas)
             EnsurePin(globe, "Pin_Europa", "Europa", "🦊", "Raposa", "Ao norte da África, com florestas temperadas e belos castelos!", 
                 new Vector3(0.293f, 0.431f, 0.096f), new Color(0.18f, 0.55f, 1f), 
                 "Assets/Models/Animals/Fox/Fox.obj", "Assets/Models/Animals/Fox/Fox.png", null, 
-                0.28f, 0.025f, new Vector3(-90f, 0f, 0f), Vector3.zero, new Color(0.92f, 0.42f, 0.08f));
+                3.040f, 0.030f, new Vector3(-90f, 0f, 0f), Vector3.zero, new Color(0.92f, 0.42f, 0.08f));
 
-            // 4. Ásia: Urso Panda (proporcional, nem gigante nem minúsculo, perfeitamente assentado)
+            // 4. Ásia: Urso Panda (escala 9.000 = 0.180m visual, perfeitamente assentado no pedestal)
             EnsurePin(globe, "Pin_Asia", "Ásia", "🐼", "Urso Panda", "O maior continente da Terra, lar das florestas de bambu e do Panda!", 
                 new Vector3(0.000f, 0.297f, 0.439f), new Color(0.95f, 0.2f, 0.35f), 
                 "Assets/Models/Animals/Panda/Panda.fbx", "Assets/Models/Animals/Panda/Panda.png", null, 
-                0.18f, 0.035f, Vector3.zero, Vector3.zero, new Color(0.92f, 0.92f, 0.92f));
+                9.000f, 0.035f, Vector3.zero, Vector3.zero, new Color(0.92f, 0.92f, 0.92f));
 
-            // 5. Oceania: Tartaruga Marinha (proporcional, nem gigante cobrindo a Terra nem minúscula, só um pouco afastada da base)
+            // 5. Oceania: Tartaruga Marinha (escala 0.210 = 0.180m visual, proporção idêntica aos demais)
             EnsurePin(globe, "Pin_Oceania", "Oceania", "🐢", "Tartaruga Marinha", "Austrália e ilhas cercadas pela Grande Barreira de Corais!", 
                 new Vector3(-0.328f, -0.255f, 0.328f), new Color(0.15f, 0.9f, 0.35f), 
                 "Assets/Models/Animals/Turtle/Turtle.fbx", "Assets/Models/Animals/Turtle/Turtle.png", null, 
-                0.16f, 0.025f, Vector3.zero, Vector3.zero, new Color(0.18f, 0.72f, 0.38f));
+                0.210f, 0.030f, Vector3.zero, Vector3.zero, new Color(0.18f, 0.72f, 0.38f));
 
-            // 6. América do Norte: Urso Pardo (tamanho original grande e vistoso)
+            // 6. América do Norte: Urso Pardo (escala 0.071 = 0.180m visual, proporção idêntica aos demais)
             EnsurePin(globe, "Pin_AmericaDoNorte", "América do Norte", "🐻", "Urso Pardo", "Florestas de pinheiros, grandes montanhas rochosas e o Urso Pardo!", 
                 new Vector3(-0.094f, 0.368f, -0.369f), new Color(0.7f, 0.25f, 0.95f), 
                 "Assets/Models/Animals/Bear/Bear.fbx", "Assets/Models/Animals/Bear/Bear.png", null, 
-                0.34f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.45f, 0.28f, 0.15f));
+                0.071f, 0.020f, Vector3.zero, Vector3.zero, new Color(0.45f, 0.28f, 0.15f));
 
-            // 7. Antártida: Pinguim Imperial (tamanho original grande, em pé sobre o gelo)
+            // 7. Antártida: Pinguim Imperial (escala 2.650 = 0.181m visual, em pé no pedestal de gelo)
             EnsurePin(globe, "Pin_Antartida", "Antártida", "🐧", "Pinguim", "O polo sul congelado coberto de gelo e colônias de pinguins!", 
                 new Vector3(0.107f, -0.519f, 0.000f), new Color(0.85f, 0.95f, 1f), 
                 "Assets/Models/Animals/Penguin/Penguin.fbx", "Assets/Models/Animals/Penguin/Penguin(Skin).png", null, 
-                0.32f, 0.040f, Vector3.zero, Vector3.zero, new Color(0.12f, 0.14f, 0.18f));
+                2.650f, 0.035f, Vector3.zero, Vector3.zero, new Color(0.12f, 0.14f, 0.18f));
         }
 
         private void EnsurePin(GameObject globe, string goName, string continent, string icon, string animal, string fact, 
@@ -316,8 +316,32 @@ namespace ARLab.Geography
                     modelGo.transform.localRotation = Quaternion.Euler(modelEulerAngles);
                     modelGo.transform.localPosition = modelOffset;
 
-                    // Aplica a escala explícita calibrada com precisão para este animal
-                    modelGo.transform.localScale = Vector3.one * targetSize;
+                    // Lógica de Normalização Universal: Garante que todos os 7 animais tenham rigorosamente a mesma dimensão visual (~0.18m)
+                    float detectedMaxDim = 0f;
+                    var meshFilters = modelGo.GetComponentsInChildren<MeshFilter>(true);
+                    foreach (var mf in meshFilters)
+                    {
+                        if (mf.sharedMesh != null)
+                        {
+                            Vector3 sz = mf.sharedMesh.bounds.size;
+                            float dim = Mathf.Max(sz.x, Mathf.Max(sz.y, sz.z));
+                            if (dim > detectedMaxDim) detectedMaxDim = dim;
+                        }
+                    }
+                    var skinnedRends = modelGo.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                    foreach (var smr in skinnedRends)
+                    {
+                        if (smr.sharedMesh != null)
+                        {
+                            Vector3 sz = smr.sharedMesh.bounds.size;
+                            float dim = Mathf.Max(sz.x, Mathf.Max(sz.y, sz.z));
+                            if (dim > detectedMaxDim) detectedMaxDim = dim;
+                        }
+                    }
+
+                    // Se a malha geométrica for detectada, unifica com base na dimensão máxima alvo de 0.18m, senão usa o targetSize calibrado
+                    float unifiedScale = (detectedMaxDim > 0.005f) ? (0.18f / detectedMaxDim) : targetSize;
+                    modelGo.transform.localScale = Vector3.one * unifiedScale;
 
                     // Aplica materiais URP Lit com texturas e cores fiéis
                     Shader s = Shader.Find("Universal Render Pipeline/Lit");
@@ -430,13 +454,13 @@ namespace ARLab.Geography
             SetRect(gameplayHUDPanel, 0, 0, 1, 1, 0, 0, 0, 0);
 
             // 1. Top HUD Card (Design Glassmorphic translúcido harmonioso no topo esquerdo)
-            GameObject topCard = CreatePanel(gameplayHUDPanel, "GlassMissionHUD", new Color(0.04f, 0.09f, 0.18f, 0.78f), GetGlassCardSprite());
+            GameObject topCard = CreatePanel(gameplayHUDPanel, "GlassMissionHUD", new Color(0.04f, 0.09f, 0.18f, 0.82f), GetGlassCardSprite());
             var topCardRt = topCard.GetComponent<RectTransform>();
             topCardRt.anchorMin = new Vector2(0f, 1f);
             topCardRt.anchorMax = new Vector2(1f, 1f);
             topCardRt.pivot = new Vector2(0f, 1f);
             topCardRt.offsetMin = new Vector2(24f, -145f);
-            topCardRt.offsetMax = new Vector2(-270f, -24f);
+            topCardRt.offsetMax = new Vector2(-280f, -24f);
 
             // Linha superior: Progresso + Pontos
             missionProgressText = CreateText(topCard, "MissionProgressText", "🎯 Missão 1 de 7", 22, new Color(0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
@@ -454,54 +478,72 @@ namespace ARLab.Geography
             missionPromptText = CreateText(topCard, "MissionPromptText", "Gire a Terra para posicionar no centro!", 17, new Color(0.82f, 0.90f, 0.98f), TextAnchor.MiddleLeft, font);
             SetRect(missionPromptText.gameObject, 0.05f, 0.05f, 0.95f, 0.32f, 0, 0, 0, 0);
 
-            // 2. Botão de Câmera RA Refinado e Elegante no Topo Direito (Cápsula Horizontal)
-            btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "", new Color(0.04f, 0.14f, 0.26f, 0.94f), font, GetRoundedPillSprite(), 18);
+            // 2. Botão de Câmera RA Refinado e Elegante no Topo Direito
+            btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "", new Color(0.04f, 0.14f, 0.28f, 0.94f), font, GetRoundedPillSprite(), 18);
             var camBtnRt = btnToggleARCamera.GetComponent<RectTransform>();
             camBtnRt.anchorMin = new Vector2(1f, 1f);
             camBtnRt.anchorMax = new Vector2(1f, 1f);
             camBtnRt.pivot = new Vector2(1f, 1f);
             camBtnRt.anchoredPosition = new Vector2(-24f, -24f);
-            camBtnRt.sizeDelta = new Vector2(230f, 120f);
+            camBtnRt.sizeDelta = new Vector2(240f, 75f);
             btnToggleARCamera.onClick.AddListener(ToggleARMode);
             btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
 
             var defaultToggleText = btnToggleARCamera.transform.Find("Text");
             if (defaultToggleText != null) DestroyImmediate(defaultToggleText.gameObject);
 
-            // Ícone Vetorial Nítido de Câmera Fotográfica
+            // Ícone Vetorial Nítido de Câmera Fotográfica (proporção 4:3 perfeita)
             var camIconGo = CreatePanel(btnToggleARCamera.gameObject, "CamIcon", Color.white, GetCameraIconSprite());
             var camIconRt = camIconGo.GetComponent<RectTransform>();
             camIconRt.anchorMin = new Vector2(0f, 0.5f);
             camIconRt.anchorMax = new Vector2(0f, 0.5f);
             camIconRt.pivot = new Vector2(0f, 0.5f);
-            camIconRt.anchoredPosition = new Vector2(18f, 0f);
-            camIconRt.sizeDelta = new Vector2(46f, 35f);
+            camIconRt.anchoredPosition = new Vector2(16f, 0f);
+            camIconRt.sizeDelta = new Vector2(48f, 36f);
 
-            // Textos Diagramados com Clareza e Sofisticação
-            btnToggleARCameraTitleText = CreateText(btnToggleARCamera.gameObject, "CamTitle", "CÂMERA RA", 15, new Color(0.0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
+            btnToggleARCameraTitleText = CreateText(btnToggleARCamera.gameObject, "CamTitle", "CÂMERA RA", 14, new Color(0.0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
             btnToggleARCameraTitleText.fontStyle = FontStyle.Bold;
-            SetRect(btnToggleARCameraTitleText.gameObject, 0.34f, 0.52f, 0.96f, 0.88f, 0, 0, 0, 0);
+            SetRect(btnToggleARCameraTitleText.gameObject, 0.32f, 0.50f, 0.96f, 0.90f, 0, 0, 0, 0);
 
             btnToggleARCameraStatusText = CreateText(btnToggleARCamera.gameObject, "CamStatus", "● ATIVAR", 18, new Color(0.2f, 1f, 0.45f), TextAnchor.MiddleLeft, font);
             btnToggleARCameraStatusText.fontStyle = FontStyle.Bold;
-            SetRect(btnToggleARCameraStatusText.gameObject, 0.34f, 0.12f, 0.96f, 0.52f, 0, 0, 0, 0);
+            SetRect(btnToggleARCameraStatusText.gameObject, 0.32f, 0.10f, 0.96f, 0.50f, 0, 0, 0, 0);
 
-            // 2.1 Botões Flutuantes de Zoom do Globo (+ e -)
-            btnZoomIn = CreateRoundedButton(gameplayHUDPanel, "BtnZoomIn", "+", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetCircleSprite(), 32);
-            SetRect(btnZoomIn.gameObject, 0.86f, 0.54f, 0.96f, 0.60f, 0, 0, 0, 0);
-            btnZoomIn.onClick.AddListener(OnZoomInClicked);
-            btnZoomIn.GetComponentInChildren<Text>().fontStyle = FontStyle.Bold;
-            var zoomInShadow = btnZoomIn.gameObject.AddComponent<Shadow>();
-            zoomInShadow.effectColor = new Color(0, 0, 0, 0.45f);
-            zoomInShadow.effectDistance = new Vector2(0, -3);
+            // 2.1 Botões de Zoom do Globo (+ e -) Lado a Lado, Logo Abaixo da Câmera RA
+            var zoomContainer = new GameObject("ZoomControlsContainer");
+            zoomContainer.transform.SetParent(gameplayHUDPanel.transform, false);
+            var zoomContainerRt = zoomContainer.AddComponent<RectTransform>();
+            zoomContainerRt.anchorMin = new Vector2(1f, 1f);
+            zoomContainerRt.anchorMax = new Vector2(1f, 1f);
+            zoomContainerRt.pivot = new Vector2(1f, 1f);
+            zoomContainerRt.anchoredPosition = new Vector2(-24f, -106f);
+            zoomContainerRt.sizeDelta = new Vector2(240f, 52f);
 
-            btnZoomOut = CreateRoundedButton(gameplayHUDPanel, "BtnZoomOut", "−", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetCircleSprite(), 32);
-            SetRect(btnZoomOut.gameObject, 0.86f, 0.46f, 0.96f, 0.52f, 0, 0, 0, 0);
+            // Botão [-] (Diminuir) à esquerda no container
+            btnZoomOut = CreateRoundedButton(zoomContainer, "BtnZoomOut", "−", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetRoundedPillSprite(), 30);
+            var zoomOutRt = btnZoomOut.GetComponent<RectTransform>();
+            zoomOutRt.anchorMin = new Vector2(0f, 0f);
+            zoomOutRt.anchorMax = new Vector2(0.48f, 1f);
+            zoomOutRt.offsetMin = Vector2.zero;
+            zoomOutRt.offsetMax = Vector2.zero;
             btnZoomOut.onClick.AddListener(OnZoomOutClicked);
             btnZoomOut.GetComponentInChildren<Text>().fontStyle = FontStyle.Bold;
             var zoomOutShadow = btnZoomOut.gameObject.AddComponent<Shadow>();
             zoomOutShadow.effectColor = new Color(0, 0, 0, 0.45f);
             zoomOutShadow.effectDistance = new Vector2(0, -3);
+
+            // Botão [+] (Aumentar) à direita no container
+            btnZoomIn = CreateRoundedButton(zoomContainer, "BtnZoomIn", "+", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetRoundedPillSprite(), 30);
+            var zoomInRt = btnZoomIn.GetComponent<RectTransform>();
+            zoomInRt.anchorMin = new Vector2(0.52f, 0f);
+            zoomInRt.anchorMax = new Vector2(1f, 1f);
+            zoomInRt.offsetMin = Vector2.zero;
+            zoomInRt.offsetMax = Vector2.zero;
+            btnZoomIn.onClick.AddListener(OnZoomInClicked);
+            btnZoomIn.GetComponentInChildren<Text>().fontStyle = FontStyle.Bold;
+            var zoomInShadow = btnZoomIn.gameObject.AddComponent<Shadow>();
+            zoomInShadow.effectColor = new Color(0, 0, 0, 0.45f);
+            zoomInShadow.effectDistance = new Vector2(0, -3);
 
             // 3. Botão Flutuante Inferior Lúdico com Widget de Olhos Animados Procedurais e Brilho Aurora Teal
             btnFoundContinent = CreateRoundedButton(gameplayHUDPanel, "BtnFoundContinent", "", new Color(0.00f, 0.84f, 0.65f, 0.98f), font, GetRoundedPillSprite(), 24);
