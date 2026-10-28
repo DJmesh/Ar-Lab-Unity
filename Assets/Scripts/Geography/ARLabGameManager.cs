@@ -50,12 +50,16 @@ namespace ARLab.Geography
 
         [Header("Botão Profissional de Câmera RA")]
         public Button btnToggleARCamera;
-        public Text btnToggleARCameraText;
+        public Text btnToggleARCameraTitleText;
+        public Text btnToggleARCameraStatusText;
         public Image btnToggleARCameraImage;
 
         [Header("Botão Lúdico com Olhos Animados")]
         public Button btnFoundContinent;
-        public Text btnFoundEyesText;
+        public RectTransform eyesLeftPupil;
+        public RectTransform eyesRightPupil;
+        public RectTransform eyeLeftTransform;
+        public RectTransform eyeRightTransform;
         public Text btnFoundLabelText;
         private Coroutine eyesAnimationCoroutine;
 
@@ -182,37 +186,37 @@ namespace ARLab.Geography
                 globeController = globe.AddComponent<GlobeController>();
             }
 
-            // 7 Continentes com Modelos 3D Reais de Animais sobre Pedestais Holográficos
+            // 7 Continentes com Modelos 3D Reais de Animais Ampliados e Texturizados Fielmente
             EnsurePin(globe, "Pin_AmericaDoSul", "América do Sul", "🐆", "Onça-Pintada", "Floresta Amazônica e o Brasil!", 
                 new Vector3(0.293f, -0.096f, -0.431f), new Color(1f, 0.85f, 0.1f), 
-                "Assets/Models/Animals/Tiger/Tiger.fbx", "Assets/Models/Animals/Tiger/texture.png", 0.13f, 0.02f);
+                "Assets/Models/Animals/Tiger/Tiger.fbx", "Assets/Models/Animals/Tiger/texture.png", "Assets/Models/Animals/Tiger/NormalMap.png", 0.34f, new Color(0.96f, 0.68f, 0.12f));
 
             EnsurePin(globe, "Pin_Africa", "África", "🐘", "Elefante", "Grandes savanas africanas com elefantes, zebras e girafas!", 
                 new Vector3(0.490f, 0.000f, 0.203f), new Color(1f, 0.48f, 0.08f), 
-                "Assets/Models/Animals/Elephant/Elephant.fbx", null, 0.12f, 0.02f);
+                "Assets/Models/Animals/Elephant/Elephant.fbx", "Assets/Models/Animals/Elephant/Elephant.png", null, 0.34f, new Color(0.48f, 0.50f, 0.53f));
 
             EnsurePin(globe, "Pin_Europa", "Europa", "🦊", "Raposa", "Ao norte da África, com florestas temperadas e belos castelos!", 
                 new Vector3(0.293f, 0.431f, 0.096f), new Color(0.18f, 0.55f, 1f), 
-                "Assets/Models/Animals/Fox/Fox.obj", null, 0.12f, 0.015f);
+                "Assets/Models/Animals/Fox/Fox.obj", "Assets/Models/Animals/Fox/Fox.png", null, 0.30f, new Color(0.92f, 0.42f, 0.08f));
 
             EnsurePin(globe, "Pin_Asia", "Ásia", "🐼", "Urso Panda", "O maior continente da Terra, lar das florestas de bambu e do Panda!", 
                 new Vector3(0.000f, 0.297f, 0.439f), new Color(0.95f, 0.2f, 0.35f), 
-                "Assets/Models/Animals/Panda/Panda.fbx", null, 0.13f, 0.02f);
+                "Assets/Models/Animals/Panda/Panda.fbx", "Assets/Models/Animals/Panda/Panda.png", null, 0.34f, new Color(0.92f, 0.92f, 0.92f));
 
             EnsurePin(globe, "Pin_Oceania", "Oceania", "🐢", "Tartaruga Marinha", "Austrália e ilhas cercadas pela Grande Barreira de Corais!", 
                 new Vector3(-0.328f, -0.255f, 0.328f), new Color(0.15f, 0.9f, 0.35f), 
-                "Assets/Models/Animals/Turtle/Turtle.fbx", null, 0.13f, 0.015f);
+                "Assets/Models/Animals/Turtle/Turtle.fbx", "Assets/Models/Animals/Turtle/Turtle.png", null, 0.34f, new Color(0.18f, 0.68f, 0.35f));
 
             EnsurePin(globe, "Pin_AmericaDoNorte", "América do Norte", "🐻", "Urso Pardo", "Florestas de pinheiros, grandes montanhas rochosas e o Urso Pardo!", 
                 new Vector3(-0.094f, 0.368f, -0.369f), new Color(0.7f, 0.25f, 0.95f), 
-                "Assets/Models/Animals/Bear/Bear.fbx", "Assets/Models/Animals/Bear/Bear.png", 0.13f, 0.02f);
+                "Assets/Models/Animals/Bear/Bear.fbx", "Assets/Models/Animals/Bear/Bear.png", null, 0.34f, new Color(0.45f, 0.28f, 0.15f));
 
             EnsurePin(globe, "Pin_Antartida", "Antártida", "🐧", "Pinguim", "O polo sul congelado coberto de gelo e colônias de pinguins!", 
                 new Vector3(0.107f, -0.519f, 0.000f), new Color(0.85f, 0.95f, 1f), 
-                "Assets/Models/Animals/Penguin/Penguin.fbx", "Assets/Models/Animals/Penguin/Penguin(Skin).png", 0.12f, 0.015f);
+                "Assets/Models/Animals/Penguin/Penguin.fbx", "Assets/Models/Animals/Penguin/Penguin(Skin).png", null, 0.32f, new Color(0.12f, 0.14f, 0.18f));
         }
 
-        private void EnsurePin(GameObject globe, string goName, string continent, string icon, string animal, string fact, Vector3 localPos, Color color, string modelPath = null, string texturePath = null, float targetSize = 0.12f, float yOffset = 0.015f)
+        private void EnsurePin(GameObject globe, string goName, string continent, string icon, string animal, string fact, Vector3 localPos, Color color, string modelPath = null, string texturePath = null, string normalPath = null, float targetSize = 0.34f, Color? animalColorOverride = null)
         {
             Transform existing = globe.transform.Find(goName);
             GameObject pinGo = existing != null ? existing.gameObject : null;
@@ -234,7 +238,7 @@ namespace ARLab.Geography
             pinGo.transform.localRotation = Quaternion.FromToRotation(Vector3.up, normal);
             pinGo.transform.localScale = Vector3.one;
 
-            // 1. Pedestal Luminoso do Continente
+            // 1. Pedestal Holográfico Fino e Elegante (disco fino para os pés não afundarem)
             Transform pedTr = pinGo.transform.Find("Pedestal");
             GameObject pedestal = pedTr != null ? pedTr.gameObject : null;
             if (pedestal == null)
@@ -245,7 +249,7 @@ namespace ARLab.Geography
             }
             pedestal.transform.localPosition = Vector3.zero;
             pedestal.transform.localRotation = Quaternion.identity;
-            pedestal.transform.localScale = new Vector3(0.12f, 0.008f, 0.12f);
+            pedestal.transform.localScale = new Vector3(0.24f, 0.003f, 0.24f);
 
             var pedMr = pedestal.GetComponent<MeshRenderer>();
             if (pedMr != null)
@@ -254,17 +258,23 @@ namespace ARLab.Geography
                 if (s == null) s = Shader.Find("Standard");
                 var mat = new Material(s);
                 mat.color = color;
+                mat.SetColor("_BaseColor", color);
                 mat.EnableKeyword("_EMISSION");
-                mat.SetColor("_EmissionColor", color * 0.45f);
+                mat.SetColor("_EmissionColor", color * 0.55f);
                 pedMr.material = mat;
             }
 
-            // 2. Modelo 3D Real do Animal
+            // 2. Modelo 3D Real do Animal (Substitui instâncias antigas para aplicar novas dimensões e texturas)
             Transform modelTr = pinGo.transform.Find("AnimalModel");
-            GameObject animalGo = modelTr != null ? modelTr.gameObject : null;
+            if (modelTr != null)
+            {
+                DestroyImmediate(modelTr.gameObject);
+            }
+
+            GameObject animalGo = null;
 
             #if UNITY_EDITOR
-            if (animalGo == null && !string.IsNullOrEmpty(modelPath))
+            if (!string.IsNullOrEmpty(modelPath))
             {
                 var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
                 if (prefab != null)
@@ -278,11 +288,13 @@ namespace ARLab.Geography
 
             if (animalGo != null)
             {
-                animalGo.transform.localPosition = new Vector3(0, yOffset, 0);
+                animalGo.transform.localPosition = Vector3.zero;
+                animalGo.transform.localRotation = Quaternion.identity;
 
                 Renderer[] rends = animalGo.GetComponentsInChildren<Renderer>(true);
                 if (rends.Length > 0)
                 {
+                    // 1. Encontra a dimensão máxima e aplica escala proporcional ampliada
                     Bounds b = rends[0].bounds;
                     for (int i = 1; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
 
@@ -294,24 +306,63 @@ namespace ARLab.Geography
                     }
                     else
                     {
-                        animalGo.transform.localScale = Vector3.one * 0.08f;
+                        animalGo.transform.localScale = Vector3.one * 0.20f;
                     }
 
+                    // 2. Recalcula a caixa envolvente com a escala definitiva para medir a altura dos pés
+                    Bounds scaledB = rends[0].bounds;
+                    for (int i = 1; i < rends.Length; i++) scaledB.Encapsulate(rends[i].bounds);
+
+                    // Topo do pedestal fino fica em Y = +0.003f
+                    float pedestalTopLocalY = 0.0035f;
+                    float lowestFootLocalY = pinGo.transform.InverseTransformPoint(scaledB.min).y;
+                    float elevationOffset = pedestalTopLocalY - lowestFootLocalY + 0.002f;
+                    animalGo.transform.localPosition = new Vector3(0, elevationOffset, 0);
+
+                    // 3. Aplica materiais do Universal Render Pipeline (URP Lit) com Textura e Cores Fidedignas
                     #if UNITY_EDITOR
-                    if (!string.IsNullOrEmpty(texturePath))
+                    Shader s = Shader.Find("Universal Render Pipeline/Lit");
+                    if (s == null) s = Shader.Find("Standard");
+
+                    Texture2D tex = !string.IsNullOrEmpty(texturePath) 
+                        ? UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath) 
+                        : null;
+                    Texture2D normalTex = !string.IsNullOrEmpty(normalPath) 
+                        ? UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(normalPath) 
+                        : null;
+
+                    Color effectiveColor = animalColorOverride ?? color;
+
+                    foreach (var r in rends)
                     {
-                        Texture2D tex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
-                        if (tex != null)
+                        int matCount = Mathf.Max(1, (r.sharedMaterials != null) ? r.sharedMaterials.Length : 1);
+                        Material[] newMats = new Material[matCount];
+                        for (int m = 0; m < matCount; m++)
                         {
-                            Shader s = Shader.Find("Universal Render Pipeline/Lit");
-                            if (s == null) s = Shader.Find("Standard");
-                            foreach (var r in rends)
+                            var mat = new Material(s);
+                            if (tex != null)
                             {
-                                var mat = new Material(s);
+                                mat.SetTexture("_BaseMap", tex);
                                 mat.mainTexture = tex;
-                                r.material = mat;
+                                mat.SetColor("_BaseColor", Color.white);
+                                mat.color = Color.white;
                             }
+                            else
+                            {
+                                mat.SetColor("_BaseColor", effectiveColor);
+                                mat.color = effectiveColor;
+                            }
+
+                            if (normalTex != null)
+                            {
+                                mat.EnableKeyword("_NORMALMAP");
+                                mat.SetTexture("_BumpMap", normalTex);
+                            }
+
+                            mat.SetFloat("_Smoothness", 0.35f);
+                            newMats[m] = mat;
                         }
+                        r.materials = newMats;
                     }
                     #endif
                 }
@@ -328,8 +379,8 @@ namespace ARLab.Geography
                     var fallback = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     fallback.name = "FallbackTotem";
                     fallback.transform.SetParent(pinGo.transform, false);
-                    fallback.transform.localPosition = new Vector3(0, 0.04f, 0);
-                    fallback.transform.localScale = Vector3.one * 0.07f;
+                    fallback.transform.localPosition = new Vector3(0, 0.05f, 0);
+                    fallback.transform.localScale = Vector3.one * 0.12f;
                     var mr = fallback.GetComponent<MeshRenderer>();
                     if (mr != null)
                     {
@@ -337,16 +388,17 @@ namespace ARLab.Geography
                         if (s == null) s = Shader.Find("Standard");
                         var mat = new Material(s);
                         mat.color = color;
+                        mat.SetColor("_BaseColor", color);
                         mr.material = mat;
                     }
                 }
             }
 
-            // 3. Collider tátil
+            // 3. Collider tátil ampliado para a nova escala
             var col = pinGo.GetComponent<SphereCollider>();
             if (col == null) col = pinGo.AddComponent<SphereCollider>();
-            col.radius = 0.09f;
-            col.center = new Vector3(0, 0.05f, 0);
+            col.radius = 0.16f;
+            col.center = new Vector3(0, 0.08f, 0);
 
             // 4. Hotspot de dados pedagógicos
             var hotspot = pinGo.GetComponent<ContinentHotspot>();
@@ -425,31 +477,97 @@ namespace ARLab.Geography
             missionPromptText = CreateText(topCard, "MissionPromptText", "Gire a Terra para posicionar no centro!", 20, new Color(0.82f, 0.90f, 0.98f), TextAnchor.MiddleLeft, font);
             SetRect(missionPromptText.gameObject, 0.06f, 0.05f, 0.94f, 0.32f, 0, 0, 0, 0);
 
-            // 2. Botão Profissional de Câmera RA com Ícone e Estado Explícito (Ativar / Desativar)
-            btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "📷 ATIVAR RA", new Color(0.06f, 0.55f, 0.45f, 0.92f), font, GetRoundedPillSprite(), 20);
-            SetRect(btnToggleARCamera.gameObject, 0.69f, 0.865f, 0.96f, 0.965f, 0, 0, 0, 0);
+            // 2. Botão Profissional de Câmera RA com Ícone Procedural e Estado Explícito
+            btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "", new Color(0.04f, 0.12f, 0.24f, 0.95f), font, GetRoundedPillSprite(), 18);
+            SetRect(btnToggleARCamera.gameObject, 0.63f, 0.865f, 0.96f, 0.965f, 0, 0, 0, 0);
             btnToggleARCamera.onClick.AddListener(ToggleARMode);
-            btnToggleARCameraText = btnToggleARCamera.GetComponentInChildren<Text>();
-            btnToggleARCameraText.fontStyle = FontStyle.Bold;
             btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
 
-            // 3. Botão Flutuante Inferior Lúdico com Olhos Animados e Brilho Aurora Teal
-            btnFoundContinent = CreateRoundedButton(gameplayHUDPanel, "BtnFoundContinent", "", new Color(0.02f, 0.78f, 0.65f, 0.96f), font, GetRoundedPillSprite(), 26);
-            SetRect(btnFoundContinent.gameObject, 0.06f, 0.035f, 0.94f, 0.11f, 0, 0, 0, 0);
+            // Remove o texto centrado padrão do botão para montar o layout composto
+            var defaultToggleText = btnToggleARCamera.transform.Find("Text");
+            if (defaultToggleText != null) DestroyImmediate(defaultToggleText.gameObject);
+
+            // Container do Ícone de Câmera Procedural
+            var camIconContainer = new GameObject("CamIconContainer");
+            camIconContainer.transform.SetParent(btnToggleARCamera.transform, false);
+            SetRect(camIconContainer, 0.05f, 0.15f, 0.32f, 0.85f, 0, 0, 0, 0);
+
+            // Corpo da Câmera
+            var camBody = CreatePanel(camIconContainer, "CamBody", Color.white, GetRoundedPillSprite());
+            SetRect(camBody, 0.10f, 0.12f, 0.90f, 0.82f, 0, 0, 0, 0);
+
+            // Lente da Câmera
+            var camLens = CreatePanel(camBody, "CamLens", new Color(0.05f, 0.15f, 0.28f, 1f), GetCircleSprite());
+            SetRect(camLens, 0.25f, 0.20f, 0.75f, 0.80f, 0, 0, 0, 0);
+
+            // Brilho na Lente
+            var camGlint = CreatePanel(camLens, "CamGlint", Color.white, GetCircleSprite());
+            SetRect(camGlint, 0.55f, 0.55f, 0.80f, 0.80f, 0, 0, 0, 0);
+
+            // Textos Informativos do Botão
+            btnToggleARCameraTitleText = CreateText(btnToggleARCamera.gameObject, "CamTitle", "CÂMERA RA", 15, new Color(0.0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
+            btnToggleARCameraTitleText.fontStyle = FontStyle.Bold;
+            SetRect(btnToggleARCameraTitleText.gameObject, 0.35f, 0.52f, 0.96f, 0.92f, 0, 0, 0, 0);
+
+            btnToggleARCameraStatusText = CreateText(btnToggleARCamera.gameObject, "CamStatus", "● ATIVAR", 19, new Color(0.2f, 1f, 0.45f), TextAnchor.MiddleLeft, font);
+            btnToggleARCameraStatusText.fontStyle = FontStyle.Bold;
+            SetRect(btnToggleARCameraStatusText.gameObject, 0.35f, 0.08f, 0.96f, 0.52f, 0, 0, 0, 0);
+
+            // 3. Botão Flutuante Inferior Lúdico com Widget de Olhos Animados Procedurais e Brilho Aurora Teal
+            btnFoundContinent = CreateRoundedButton(gameplayHUDPanel, "BtnFoundContinent", "", new Color(0.00f, 0.84f, 0.65f, 0.98f), font, GetRoundedPillSprite(), 24);
+            SetRect(btnFoundContinent.gameObject, 0.05f, 0.032f, 0.95f, 0.120f, 0, 0, 0, 0);
             btnFoundContinent.onClick.AddListener(CheckCurrentOrientation);
 
-            // Remove o texto centrado padrão para acomodar os Olhos Animados + Rótulo Lúdico
-            var defaultBtnText = btnFoundContinent.transform.Find("Text");
-            if (defaultBtnText != null) DestroyImmediate(defaultBtnText.gameObject);
+            // Sombra suave para destacar o botão sobre a câmera ou fundo cósmico
+            var btnShadow = btnFoundContinent.gameObject.AddComponent<Shadow>();
+            btnShadow.effectColor = new Color(0f, 0f, 0f, 0.45f);
+            btnShadow.effectDistance = new Vector2(0, -4);
 
-            // Olhos observando animados (lado esquerdo)
-            btnFoundEyesText = CreateText(btnFoundContinent.gameObject, "EyesIcon", "👀", 36, Color.white, TextAnchor.MiddleCenter, font);
-            SetRect(btnFoundEyesText.gameObject, 0.02f, 0.05f, 0.20f, 0.95f, 0, 0, 0, 0);
+            // Remove o texto centrado padrão
+            var defaultFoundText = btnFoundContinent.transform.Find("Text");
+            if (defaultFoundText != null) DestroyImmediate(defaultFoundText.gameObject);
 
-            // Rótulo de confirmação com visual vibrante (centro-direita)
-            btnFoundLabelText = CreateText(btnFoundContinent.gameObject, "MainLabel", "ESTOU VENDO ESTE CONTINENTE!", 25, Color.white, TextAnchor.MiddleLeft, font);
+            // Container dos Olhos Animados (Lado Esquerdo)
+            var eyesContainer = new GameObject("ProceduralEyesContainer");
+            eyesContainer.transform.SetParent(btnFoundContinent.transform, false);
+            SetRect(eyesContainer, 0.04f, 0.12f, 0.22f, 0.88f, 0, 0, 0, 0);
+
+            // Olho Esquerdo (Esclera)
+            var eyeLeftGo = CreatePanel(eyesContainer, "EyeLeft", Color.white, GetCircleSprite());
+            SetRect(eyeLeftGo, 0.04f, 0.12f, 0.46f, 0.88f, 0, 0, 0, 0);
+            eyeLeftTransform = eyeLeftGo.GetComponent<RectTransform>();
+
+            // Pupila Esquerda
+            var pupilLeftGo = CreatePanel(eyeLeftGo, "PupilLeft", new Color(0.08f, 0.12f, 0.22f), GetCircleSprite());
+            SetRect(pupilLeftGo, 0.20f, 0.20f, 0.80f, 0.80f, 0, 0, 0, 0);
+            eyesLeftPupil = pupilLeftGo.GetComponent<RectTransform>();
+
+            // Brilho da Pupila Esquerda
+            var glintLeft = CreatePanel(pupilLeftGo, "GlintLeft", Color.white, GetCircleSprite());
+            SetRect(glintLeft, 0.55f, 0.55f, 0.85f, 0.85f, 0, 0, 0, 0);
+
+            // Olho Direito (Esclera)
+            var eyeRightGo = CreatePanel(eyesContainer, "EyeRight", Color.white, GetCircleSprite());
+            SetRect(eyeRightGo, 0.54f, 0.12f, 0.96f, 0.88f, 0, 0, 0, 0);
+            eyeRightTransform = eyeRightGo.GetComponent<RectTransform>();
+
+            // Pupila Direita
+            var pupilRightGo = CreatePanel(eyeRightGo, "PupilRight", new Color(0.08f, 0.12f, 0.22f), GetCircleSprite());
+            SetRect(pupilRightGo, 0.20f, 0.20f, 0.80f, 0.80f, 0, 0, 0, 0);
+            eyesRightPupil = pupilRightGo.GetComponent<RectTransform>();
+
+            // Brilho da Pupila Direita
+            var glintRight = CreatePanel(pupilRightGo, "GlintRight", Color.white, GetCircleSprite());
+            SetRect(glintRight, 0.55f, 0.55f, 0.85f, 0.85f, 0, 0, 0, 0);
+
+            // Rótulo Principal Lúdico e Impactante (Centro e Direita)
+            btnFoundLabelText = CreateText(btnFoundContinent.gameObject, "MainLabel", "ESTOU VENDO ESTE CONTINENTE!", 25, Color.white, TextAnchor.MiddleCenter, font);
             btnFoundLabelText.fontStyle = FontStyle.Bold;
-            SetRect(btnFoundLabelText.gameObject, 0.20f, 0.05f, 0.98f, 0.95f, 0, 0, 0, 0);
+            SetRect(btnFoundLabelText.gameObject, 0.24f, 0.05f, 0.98f, 0.95f, 0, 0, 0, 0);
+
+            var labelShadow = btnFoundLabelText.gameObject.AddComponent<Shadow>();
+            labelShadow.effectColor = new Color(0.02f, 0.28f, 0.22f, 0.90f);
+            labelShadow.effectDistance = new Vector2(1, -2);
 
             // 4. Toast Notification Flutuante
             EnsureToastUI(canvasGo, font);
@@ -510,42 +628,67 @@ namespace ARLab.Geography
 
         private IEnumerator EyesAnimationRoutine()
         {
-            // Ciclo lúdico de olhos observando, piscando e procurando continentes
-            string[] eyeFrames = new string[]
+            Vector2[] pupilOffsets = new Vector2[]
             {
-                "👀",      // Olhos atentos olhando a Terra
-                "👀",      // Observando
-                "😌",      // Piscadela rápida e amigável
-                "👀",      // Reabertos
-                "🔎👀",    // Procurando à esquerda
-                "👀🔍",    // Procurando à direita
-                "✨👀✨",  // Olhos brilhando curiosos
-                "🤩"       // Encantado com a descoberta
+                new Vector2(0f, 0f),     // Centro
+                new Vector2(0f, 6f),     // Olhando para cima (para o globo terrestre!)
+                new Vector2(-6f, 2f),    // Olhando para a esquerda
+                new Vector2(6f, 2f),     // Olhando para a direita
+                new Vector2(0f, 0f)      // Centro
             };
 
-            float[] durations = new float[]
-            {
-                1.5f,
-                1.2f,
-                0.18f,
-                1.0f,
-                1.3f,
-                1.3f,
-                1.5f,
-                1.2f
-            };
-
-            int index = 0;
             while (true)
             {
-                if (btnFoundEyesText != null)
+                for (int p = 0; p < pupilOffsets.Length; p++)
                 {
-                    btnFoundEyesText.text = eyeFrames[index];
+                    Vector2 target = pupilOffsets[p];
+                    float elapsed = 0f;
+                    Vector2 startLeft = (eyesLeftPupil != null) ? eyesLeftPupil.anchoredPosition : Vector2.zero;
+                    Vector2 startRight = (eyesRightPupil != null) ? eyesRightPupil.anchoredPosition : Vector2.zero;
+
+                    while (elapsed < 0.20f)
+                    {
+                        elapsed += Time.deltaTime;
+                        float t = elapsed / 0.20f;
+                        if (eyesLeftPupil != null) eyesLeftPupil.anchoredPosition = Vector2.Lerp(startLeft, target, t);
+                        if (eyesRightPupil != null) eyesRightPupil.anchoredPosition = Vector2.Lerp(startRight, target, t);
+                        yield return null;
+                    }
+
+                    yield return new WaitForSeconds(1.3f);
+
+                    // Piscar os olhinhos de forma expressiva e amigável
+                    if (p == 1 || p == 3)
+                    {
+                        yield return StartCoroutine(BlinkEyesRoutine());
+                    }
                 }
+            }
+        }
 
-                yield return new WaitForSeconds(durations[index]);
+        private IEnumerator BlinkEyesRoutine()
+        {
+            float blinkDuration = 0.08f;
+            float elapsed = 0f;
+            while (elapsed < blinkDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / blinkDuration;
+                float scaleY = Mathf.Lerp(1f, 0.1f, t);
+                if (eyeLeftTransform != null) eyeLeftTransform.localScale = new Vector3(1f, scaleY, 1f);
+                if (eyeRightTransform != null) eyeRightTransform.localScale = new Vector3(1f, scaleY, 1f);
+                yield return null;
+            }
 
-                index = (index + 1) % eyeFrames.Length;
+            elapsed = 0f;
+            while (elapsed < blinkDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / blinkDuration;
+                float scaleY = Mathf.Lerp(0.1f, 1f, t);
+                if (eyeLeftTransform != null) eyeLeftTransform.localScale = new Vector3(1f, scaleY, 1f);
+                if (eyeRightTransform != null) eyeRightTransform.localScale = new Vector3(1f, scaleY, 1f);
+                yield return null;
             }
         }
 
@@ -912,15 +1055,23 @@ namespace ARLab.Geography
 
         public void UpdateARButtonUI(bool isARActive)
         {
-            if (btnToggleARCameraText != null)
+            if (btnToggleARCameraTitleText != null)
             {
-                btnToggleARCameraText.text = isARActive ? "✕ DESATIVAR RA" : "📷 ATIVAR RA";
+                btnToggleARCameraTitleText.text = isARActive ? "CÂMERA ATIVA" : "CÂMERA RA";
+                btnToggleARCameraTitleText.color = isARActive ? new Color(1f, 0.88f, 0.35f) : new Color(0.0f, 0.92f, 1f);
             }
+
+            if (btnToggleARCameraStatusText != null)
+            {
+                btnToggleARCameraStatusText.text = isARActive ? "● AO VIVO" : "● ATIVAR";
+                btnToggleARCameraStatusText.color = isARActive ? new Color(1f, 0.28f, 0.38f) : new Color(0.2f, 1f, 0.45f);
+            }
+
             if (btnToggleARCameraImage != null)
             {
                 btnToggleARCameraImage.color = isARActive 
-                    ? new Color(0.78f, 0.18f, 0.28f, 0.92f) 
-                    : new Color(0.06f, 0.55f, 0.45f, 0.92f);
+                    ? new Color(0.55f, 0.08f, 0.16f, 0.94f) 
+                    : new Color(0.04f, 0.12f, 0.24f, 0.95f);
             }
         }
 
