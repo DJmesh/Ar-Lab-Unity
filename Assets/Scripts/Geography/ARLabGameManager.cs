@@ -496,32 +496,32 @@ namespace ARLab.Geography
             gameplayHUDPanel = CreatePanel(canvasGo, "GameplayHUD", Color.clear);
             SetRect(gameplayHUDPanel, 0, 0, 1, 1, 0, 0, 0, 0);
 
-            // 1. Top HUD Card (Design Glassmorphic Espaçoso e Lúdico com Emblema do Animal e Textos Grandes)
+            // 1. Top HUD Card (Design Glassmorphic Afastado do Topo para Safe Area de Celulares e Fontes Grandes)
             GameObject topCard = CreatePanel(gameplayHUDPanel, "GlassMissionHUD", new Color(0.04f, 0.09f, 0.18f, 0.92f), GetGlassCardSprite());
             var topCardRt = topCard.GetComponent<RectTransform>();
             topCardRt.anchorMin = new Vector2(0f, 1f);
             topCardRt.anchorMax = new Vector2(1f, 1f);
             topCardRt.pivot = new Vector2(0f, 1f);
-            topCardRt.offsetMin = new Vector2(24f, -235f);
-            topCardRt.offsetMax = new Vector2(-280f, -20f);
+            topCardRt.offsetMin = new Vector2(24f, -400f);
+            topCardRt.offsetMax = new Vector2(-285f, -115f);
 
             var topCardShadow = topCard.AddComponent<Shadow>();
             topCardShadow.effectColor = new Color(0f, 0f, 0f, 0.55f);
             topCardShadow.effectDistance = new Vector2(0, -4);
 
-            // Emblema / Avatar Lúdico do Animal da Missão (Lado Esquerdo)
+            // Emblema / Avatar Lúdico Ampliado do Animal da Missão (Lado Esquerdo)
             var avatarBadge = CreatePanel(topCard, "AnimalAvatarBadge", new Color(0.08f, 0.22f, 0.40f, 0.95f), GetCircleSprite());
             var avatarRt = avatarBadge.GetComponent<RectTransform>();
             avatarRt.anchorMin = new Vector2(0f, 0.5f);
             avatarRt.anchorMax = new Vector2(0f, 0.5f);
             avatarRt.pivot = new Vector2(0f, 0.5f);
-            avatarRt.anchoredPosition = new Vector2(16f, 0f);
-            avatarRt.sizeDelta = new Vector2(96f, 96f);
+            avatarRt.anchoredPosition = new Vector2(20f, 0f);
+            avatarRt.sizeDelta = new Vector2(110f, 110f);
             var avatarGlow = avatarBadge.AddComponent<Shadow>();
             avatarGlow.effectColor = new Color(0f, 0.92f, 1f, 0.5f);
             avatarGlow.effectDistance = new Vector2(0, 0);
 
-            missionAvatarText = CreateText(avatarBadge, "AvatarIcon", "🐆", 54, Color.white, TextAnchor.MiddleCenter, font);
+            missionAvatarText = CreateText(avatarBadge, "AvatarIcon", "🐆", 62, Color.white, TextAnchor.MiddleCenter, font);
             SetRect(missionAvatarText.gameObject, 0, 0, 1, 1, 0, 0, 0, 0);
 
             // Container de Conteúdo e Instruções Textuais Ampliadas (Direita do Avatar)
@@ -529,79 +529,79 @@ namespace ARLab.Geography
             var mcRt = missionContent.GetComponent<RectTransform>();
             mcRt.anchorMin = new Vector2(0f, 0f);
             mcRt.anchorMax = new Vector2(1f, 1f);
-            mcRt.offsetMin = new Vector2(124f, 10f);
-            mcRt.offsetMax = new Vector2(-16f, -10f);
+            mcRt.offsetMin = new Vector2(148f, 14f);
+            mcRt.offsetMax = new Vector2(-18f, -14f);
 
-            // Linha superior: Progresso + Pontos
-            missionProgressText = CreateText(missionContent, "MissionProgressText", "🎯 MISSÃO 1 DE 7", 22, new Color(0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
+            // Linha superior: Progresso + Pontos em Fonte 26pt
+            missionProgressText = CreateText(missionContent, "MissionProgressText", "🎯 MISSÃO 1 DE 7", 26, new Color(0f, 0.95f, 1f), TextAnchor.MiddleLeft, font);
             missionProgressText.fontStyle = FontStyle.Bold;
-            SetRect(missionProgressText.gameObject, 0f, 0.74f, 0.60f, 1.0f, 0, 0, 0, 0);
+            SetRect(missionProgressText.gameObject, 0f, 0.76f, 0.58f, 1.0f, 0, 0, 0, 0);
 
-            scoreText = CreateText(missionContent, "ScoreText", "⭐ 0 PTS", 22, new Color(1f, 0.85f, 0.2f), TextAnchor.MiddleRight, font);
+            scoreText = CreateText(missionContent, "ScoreText", "⭐ 0 PTS", 26, new Color(1f, 0.88f, 0.2f), TextAnchor.MiddleRight, font);
             scoreText.fontStyle = FontStyle.Bold;
-            SetRect(scoreText.gameObject, 0.60f, 0.74f, 1.0f, 1.0f, 0, 0, 0, 0);
+            SetRect(scoreText.gameObject, 0.58f, 0.76f, 1.0f, 1.0f, 0, 0, 0, 0);
 
-            // Linha central: Nome do Continente Alvo em Grande Destaque
-            missionTitleText = CreateText(missionContent, "MissionTitleText", "América do Sul", 32, Color.white, TextAnchor.MiddleLeft, font);
+            // Linha central: Nome do Continente Alvo em Fonte 38pt
+            missionTitleText = CreateText(missionContent, "MissionTitleText", "América do Sul", 38, Color.white, TextAnchor.MiddleLeft, font);
             missionTitleText.fontStyle = FontStyle.Bold;
-            SetRect(missionTitleText.gameObject, 0f, 0.46f, 1.0f, 0.76f, 0, 0, 0, 0);
+            SetRect(missionTitleText.gameObject, 0f, 0.44f, 1.0f, 0.76f, 0, 0, 0, 0);
             var titleShadow = missionTitleText.gameObject.AddComponent<Shadow>();
-            titleShadow.effectColor = new Color(0f, 0f, 0f, 0.6f);
+            titleShadow.effectColor = new Color(0f, 0f, 0f, 0.65f);
             titleShadow.effectDistance = new Vector2(1, -2);
 
-            // Linha inferior: Instrução Alegórica em Destaque com Texto Grande e Amarelo Suave
-            missionPromptText = CreateText(missionContent, "MissionPromptText", "👉 Gire o planeta até o Brasil no centro e aperte o botão verde com olhos! 👀", 20, new Color(1.0f, 0.95f, 0.68f), TextAnchor.MiddleLeft, font);
+            // Linha inferior: Instrução Alegórica em Destaque com Fonte 25pt e Amarelo Suave
+            missionPromptText = CreateText(missionContent, "MissionPromptText", "👉 Gire o planeta até o Brasil no centro e aperte o botão verde com olhos! 👀", 25, new Color(1.0f, 0.96f, 0.72f), TextAnchor.MiddleLeft, font);
             missionPromptText.fontStyle = FontStyle.Bold;
             missionPromptText.horizontalOverflow = HorizontalWrapMode.Wrap;
-            missionPromptText.verticalOverflow = VerticalWrapMode.Truncate;
-            SetRect(missionPromptText.gameObject, 0f, 0.0f, 1.0f, 0.46f, 0, 0, 0, 0);
+            missionPromptText.verticalOverflow = VerticalWrapMode.Overflow;
+            SetRect(missionPromptText.gameObject, 0f, 0.0f, 1.0f, 0.44f, 0, 0, 0, 0);
             var promptShadow = missionPromptText.gameObject.AddComponent<Shadow>();
-            promptShadow.effectColor = new Color(0f, 0f, 0f, 0.7f);
+            promptShadow.effectColor = new Color(0f, 0f, 0f, 0.75f);
             promptShadow.effectDistance = new Vector2(1, -2);
 
-            // 2. Botão de Câmera RA Refinado e Elegante no Topo Direito
+            // 2. Botão de Câmera RA Refinado e Afastado do Topo (Safe Area)
             btnToggleARCamera = CreateRoundedButton(gameplayHUDPanel, "BtnToggleARCamera", "", new Color(0.04f, 0.14f, 0.28f, 0.94f), font, GetRoundedPillSprite(), 18);
             var camBtnRt = btnToggleARCamera.GetComponent<RectTransform>();
             camBtnRt.anchorMin = new Vector2(1f, 1f);
             camBtnRt.anchorMax = new Vector2(1f, 1f);
             camBtnRt.pivot = new Vector2(1f, 1f);
-            camBtnRt.anchoredPosition = new Vector2(-24f, -24f);
-            camBtnRt.sizeDelta = new Vector2(240f, 75f);
+            camBtnRt.anchoredPosition = new Vector2(-24f, -115f);
+            camBtnRt.sizeDelta = new Vector2(240f, 88f);
             btnToggleARCamera.onClick.AddListener(ToggleARMode);
             btnToggleARCameraImage = btnToggleARCamera.GetComponent<Image>();
 
             var defaultToggleText = btnToggleARCamera.transform.Find("Text");
             if (defaultToggleText != null) DestroyImmediate(defaultToggleText.gameObject);
 
-            // Ícone Vetorial Nítido de Câmera Fotográfica (proporção 4:3 perfeita)
+            // Ícone Vetorial Nítido de Câmera Fotográfica
             var camIconGo = CreatePanel(btnToggleARCamera.gameObject, "CamIcon", Color.white, GetCameraIconSprite());
             var camIconRt = camIconGo.GetComponent<RectTransform>();
             camIconRt.anchorMin = new Vector2(0f, 0.5f);
             camIconRt.anchorMax = new Vector2(0f, 0.5f);
             camIconRt.pivot = new Vector2(0f, 0.5f);
-            camIconRt.anchoredPosition = new Vector2(16f, 0f);
-            camIconRt.sizeDelta = new Vector2(48f, 36f);
+            camIconRt.anchoredPosition = new Vector2(18f, 0f);
+            camIconRt.sizeDelta = new Vector2(52f, 40f);
 
-            btnToggleARCameraTitleText = CreateText(btnToggleARCamera.gameObject, "CamTitle", "CÂMERA RA", 14, new Color(0.0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
+            btnToggleARCameraTitleText = CreateText(btnToggleARCamera.gameObject, "CamTitle", "CÂMERA RA", 16, new Color(0.0f, 0.92f, 1f), TextAnchor.MiddleLeft, font);
             btnToggleARCameraTitleText.fontStyle = FontStyle.Bold;
             SetRect(btnToggleARCameraTitleText.gameObject, 0.32f, 0.50f, 0.96f, 0.90f, 0, 0, 0, 0);
 
-            btnToggleARCameraStatusText = CreateText(btnToggleARCamera.gameObject, "CamStatus", "● ATIVAR", 18, new Color(0.2f, 1f, 0.45f), TextAnchor.MiddleLeft, font);
+            btnToggleARCameraStatusText = CreateText(btnToggleARCamera.gameObject, "CamStatus", "● ATIVAR", 20, new Color(0.2f, 1f, 0.45f), TextAnchor.MiddleLeft, font);
             btnToggleARCameraStatusText.fontStyle = FontStyle.Bold;
             SetRect(btnToggleARCameraStatusText.gameObject, 0.32f, 0.10f, 0.96f, 0.50f, 0, 0, 0, 0);
 
-            // 2.1 Botões de Zoom do Globo (+ e -) Lado a Lado, Logo Abaixo da Câmera RA
+            // 2.1 Botões de Zoom do Globo (+ e -) Lado a Lado, Abaixo da Câmera RA e Afastados do Topo
             var zoomContainer = new GameObject("ZoomControlsContainer");
             zoomContainer.transform.SetParent(gameplayHUDPanel.transform, false);
             var zoomContainerRt = zoomContainer.AddComponent<RectTransform>();
             zoomContainerRt.anchorMin = new Vector2(1f, 1f);
             zoomContainerRt.anchorMax = new Vector2(1f, 1f);
             zoomContainerRt.pivot = new Vector2(1f, 1f);
-            zoomContainerRt.anchoredPosition = new Vector2(-24f, -106f);
-            zoomContainerRt.sizeDelta = new Vector2(240f, 52f);
+            zoomContainerRt.anchoredPosition = new Vector2(-24f, -215f);
+            zoomContainerRt.sizeDelta = new Vector2(240f, 66f);
 
             // Botão [-] (Diminuir) à esquerda no container
-            btnZoomOut = CreateRoundedButton(zoomContainer, "BtnZoomOut", "−", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetRoundedPillSprite(), 30);
+            btnZoomOut = CreateRoundedButton(zoomContainer, "BtnZoomOut", "−", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetRoundedPillSprite(), 38);
             var zoomOutRt = btnZoomOut.GetComponent<RectTransform>();
             zoomOutRt.anchorMin = new Vector2(0f, 0f);
             zoomOutRt.anchorMax = new Vector2(0.48f, 1f);
@@ -614,7 +614,7 @@ namespace ARLab.Geography
             zoomOutShadow.effectDistance = new Vector2(0, -3);
 
             // Botão [+] (Aumentar) à direita no container
-            btnZoomIn = CreateRoundedButton(zoomContainer, "BtnZoomIn", "+", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetRoundedPillSprite(), 30);
+            btnZoomIn = CreateRoundedButton(zoomContainer, "BtnZoomIn", "+", new Color(0.04f, 0.12f, 0.24f, 0.92f), font, GetRoundedPillSprite(), 38);
             var zoomInRt = btnZoomIn.GetComponent<RectTransform>();
             zoomInRt.anchorMin = new Vector2(0.52f, 0f);
             zoomInRt.anchorMax = new Vector2(1f, 1f);
