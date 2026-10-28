@@ -1,0 +1,11 @@
+flowchart LR
+    A[Intro AR LAB] --> B[Missão N de 7: continente e animal]
+    B --> C[Criança gira o globo]
+    C --> D[Toca em ESTOU VENDO ESTE CONTINENTE]
+    D --> E{Continente correto centralizado?}
+    E -- Sim --> F[Animal 3D pula, +pontos, card informativo]
+    E -- Não --> G[Correção adaptativa suave, tenta novamente]
+    G --> C
+    F --> H{Última missão?}
+    H -- Não --> B
+    H -- Sim --> I[Tela de vitória e telemetria registrada]

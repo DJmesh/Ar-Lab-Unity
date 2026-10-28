@@ -1,0 +1,14 @@
+flowchart TD
+    U([Criança / Mediador]) --> APP[Aplicativo AR Lab - Unity 6 / Android]
+    APP --> UI[Interface uGUI: HUD de missão, botões, intro]
+    UI --> GM[ARLabGameManager - lógica de missões]
+    GM --> GC[GlobeController - rotação e zoom]
+    GM --> HS[ContinentHotspot - 7 continentes + animais 3D]
+    GM --> TL[TelemetryLogger - JSON local offline]
+    GM --> CAM[ARCameraBackground - pass-through da câmera]
+    CAM --> WCT[WebCamTexture - API de câmera Unity]
+    WCT --> HW[Câmera traseira do smartphone]
+    GC --> URP[Universal Render Pipeline 17.6 - OpenGLES3 / Vulkan]
+    HS --> URP
+    URP --> SCREEN[Tela: globo 3D sobreposto ao vídeo da câmera]
+    TL --> FS[(persistentDataPath / ar_globo_telemetry.json)]

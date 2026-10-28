@@ -1,0 +1,17 @@
+sequenceDiagram
+    actor C as Criança
+    participant G as ARLabGameManager
+    participant B as ARCameraBackground
+    participant W as WebCamTexture
+    participant R as Renderização URP
+    C->>G: Abre o app (intro AR LAB)
+    G->>R: Instancia globo, pedestais e animais 3D
+    C->>G: Toca em CÂMERA RA - ATIVAR
+    G->>B: ToggleARCamera()
+    B->>C: Solicita permissão de câmera (Android)
+    C-->>B: Autoriza
+    B->>W: Inicia WebCamTexture (câmera traseira)
+    W-->>B: Frames de vídeo em tempo real
+    B->>R: Exibe frames em RawImage de fundo (full-bleed)
+    R-->>C: Globo 3D renderizado sobre o ambiente real
+    C->>R: Gira e dá zoom no globo
