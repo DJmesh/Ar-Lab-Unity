@@ -464,7 +464,7 @@ Fonte: [`casos-de-uso.mmd`](docs/diagrams/casos-de-uso.mmd).
 
 ## 19. Interface da Aplicação
 
-> As capturas abaixo foram feitas durante o desenvolvimento. A HUD recebeu refinamentos posteriores (maior afastamento do topo e fontes ampliadas); as capturas devem ser atualizadas após a próxima geração do APK.
+> As capturas abaixo apresentam a versão atualizada da aplicação em funcionamento, com a HUD refinada com espaçamento superior (safe area para câmera frontal/notch), fontes ampliadas e modelos 3D proporcionais.
 
 | Tela | Finalidade | Principais elementos | Ação do usuário |
 |---|---|---|---|
