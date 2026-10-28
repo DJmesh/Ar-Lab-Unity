@@ -25,8 +25,8 @@ namespace ARLab.Geography
         public float idleRotationSpeed = 10f;
 
         [Header("Configurações de Escala e Pinça (Pinch)")]
-        public float minScale = 0.6f;
-        public float maxScale = 3.2f;
+        public float minScale = 0.75f;
+        public float maxScale = 2.10f;
         [Tooltip("Sensibilidade do movimento de pinça para zoom")]
         public float pinchZoomSpeed = 0.0035f;
         public float mouseZoomSpeed = 0.002f;
@@ -196,5 +196,26 @@ namespace ARLab.Geography
                 transform.Rotate(Vector3.up, idleRotationSpeed * Time.deltaTime, Space.World);
             }
         }
+
+        /// <summary>
+        /// Aumenta suavemente o tamanho do globo terrestre dentro dos limites seguros
+        /// </summary>
+        public void ZoomIn(float step = 0.15f)
+        {
+            float newScale = Mathf.Clamp(transform.localScale.x + step, minScale, maxScale);
+            transform.localScale = Vector3.one * newScale;
+            idleTimer = 0f;
+        }
+
+        /// <summary>
+        /// Diminui suavemente o tamanho do globo terrestre dentro dos limites seguros
+        /// </summary>
+        public void ZoomOut(float step = 0.15f)
+        {
+            float newScale = Mathf.Clamp(transform.localScale.x - step, minScale, maxScale);
+            transform.localScale = Vector3.one * newScale;
+            idleTimer = 0f;
+        }
     }
+
 }
